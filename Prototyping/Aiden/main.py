@@ -1,4 +1,6 @@
 import pygame,sys
+from physicObject import PhysicObject
+from collisionObject import CollisionObject
 
 pygame.init()
 
@@ -10,11 +12,16 @@ fps = 60
 
 dt = 0
 
+testObject = PhysicObject((WIDTH/2, 32,), (64, 64))
+
+platforms = [CollisionObject([WIDTH/2, Height-16], [WIDTH, 32])]
+
 def update(dt):
-    pass
+    testObject.update(dt)
 
 def draw(screen):
     screen.fill("black")
+    testObject.draw(screen)
 
 
 isRunning = True
