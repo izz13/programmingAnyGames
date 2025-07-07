@@ -14,7 +14,7 @@ dt = 0
 
 testObject = PhysicObject((WIDTH/2, 32,), (64, 64))
 
-platforms = [CollisionObject([WIDTH/2, Height-16], [WIDTH, 32])]
+platforms = [CollisionObject([WIDTH/2, HEIGHT-16], [WIDTH, 32])]
 
 def update(dt):
     testObject.update(dt)
