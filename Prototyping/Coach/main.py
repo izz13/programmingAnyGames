@@ -1,27 +1,31 @@
 import pygame,sys
-from physicObject import PhysicObject
+from player import Player
 from collisionObject import CollisionObject
 
 pygame.init()
 
 WIDTH,HEIGHT = 800,600
 
-screen = pygame.display.set_mode([WIDTH,HEIGHT])
+screen = pygame.display.set_mode([WIDTH,HEIGHT],vsync=1)
 clock = pygame.time.Clock()
 fps = 60
 
 dt = 0
 
-testObject = PhysicObject([WIDTH/2,32],[64,64])
+testObject = Player([WIDTH/2,32],[64,64])
 
 platforms = [CollisionObject([WIDTH/2,HEIGHT -16],[WIDTH,32])]
 
 def update(dt):
-    testObject.update(dt)
+    testObject.update(dt,platforms)
+    for platform in platforms:
+        platform.update()
 
 def draw(screen):
     screen.fill("black")
     testObject.draw(screen)
+    for platform in platforms:
+        platform.draw(screen)
 
 
 isRunning = True
