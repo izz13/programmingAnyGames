@@ -1,6 +1,8 @@
 import pygame
 from pygame.math import Vector2
 
+
+#PhysicObject Class will only handle collisions and gravity
 class PhysicObject:
     GRAVITY = 1000
     def __init__(self,startPos,size):
@@ -12,8 +14,10 @@ class PhysicObject:
         self.vel = Vector2(0)
         self.acc = Vector2(0)
         self.onGround = False
+        self.collisionObjects = []
 
-    def update(self,dt):
+    def update(self, dt, collisionObjects):
+        self.collisionObjects = collisionObjects
         self.move(dt)
         self.rect.center = self.pos
 
@@ -32,8 +36,11 @@ class PhysicObject:
 
     def checkIfOnGround(self,dt):
         fallStep = PhysicObject.GRAVITY * dt
-        if self.rect.bottom + fallStep > 600:
-            self.rect.bottom = 600
-            self.pos = self.rect.center
-            self.vel.y = 0
-            self.onGround = True
+        futureRect = pygame.Rect(self.rect.x, self.rect.y + fallStep, self.rect.width, self.rect.height)
+        for obj in self.collisionObjects:
+            if obj.rect.colliderect(futureRect):
+                self.vel.y = 0
+                self.rect.bottom = obj.rect.top
+                self.pos = self.rect.center
+                self.onGround = True
+                break
