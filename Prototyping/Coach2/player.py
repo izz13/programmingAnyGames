@@ -34,6 +34,14 @@ class Player:
         self.physicObject.update(dt,collisionObjects)
 
     def draw(self,screen):
+        if self.currentState == Player.states["idle"]:
+            self.image.fill("green")
+        if self.currentState == Player.states["move"]:
+            self.image.fill("red")
+        if self.currentState == Player.states["jump"]:
+            self.image.fill("yellow")
+        if self.currentState == Player.states["fall"]:
+            self.image.fill("purple")
         screen.blit(self.image,self.physicObject.rect)
 
     def getInput(self):
@@ -59,7 +67,7 @@ class Player:
 
     def idleUpdate(self,dt):
         currentState = self.currentState
-        self.image.fill("green")
+        #self.image.fill("green")
         inputVector = self.getInput()
         if inputVector != Vector2(0):
             if inputVector.y == -1 and self.physicObject.onGround:
@@ -72,7 +80,7 @@ class Player:
 
     def moveUpdate(self,dt):
         currentState = self.currentState
-        self.image.fill("red")
+        #self.image.fill("red")
         self.direction = self.getInput()
         self.moveX(dt)
         if self.direction == Vector2(0):
