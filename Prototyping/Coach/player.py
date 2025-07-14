@@ -6,7 +6,8 @@ class Player:
     states = {
         "idle" : 0,
         "move" : 1,
-        "jump" : 2
+        "jump" : 2,
+        "fall" : 3
     }
     def __init__(self,startPos,size):
         self.physicObject = PhysicObject(startPos,size)
@@ -15,6 +16,7 @@ class Player:
         self.maxSpeed = 300
         self.acc = 700
         self.deAcc = 700
+        self.jumpSpeed = 200
         self.currentState = Player.states["idle"]
 
     def update(self,dt,collisionObjects):
@@ -24,6 +26,10 @@ class Player:
             self.idleUpdate(dt)
         elif self.currentState == Player.states["move"]:
             self.moveUpdate(dt)
+        elif self.currentState == Player.states["jump"]:
+            self.jumpUpdate(dt)
+        elif self.currentState == Player.states["fall"]:
+            self.fallUpdate(dt)
         self.physicObject.update(dt,collisionObjects)
 
     def draw(self,screen):
@@ -36,6 +42,8 @@ class Player:
             inputVector.x = -1
         if keys[pygame.K_d]:
             inputVector.x = 1
+        if keys [pygame.K_w]:
+            inputVector.y = -1
         return inputVector
     
     def moveX(self,dt):
@@ -51,7 +59,12 @@ class Player:
     def idleUpdate(self,dt):
         currentState = self.currentState
         self.image.fill("green")
-        if self.getInput() != Vector2(0):
+        inputVector = self.getInput()
+        if inputVector != Vector2(0):
+            if inputVector.y == -1 and self.physicObject.onGround:
+                currentState = Player.states["jump"]
+            else:
+                currentState = Player.states["move"]
             currentState = Player.states["move"]
             self.direction = self.getInput()
         self.moveX(dt)
@@ -64,6 +77,33 @@ class Player:
         self.moveX(dt)
         if self.direction == Vector2(0):
             currentState = Player.states["idle"]
+        elif self.direction.y == -1 and self.physicObject.onGround:
+            currentState = Player.states["jump"]
         self.currentState = currentState
 
-        
+    def jumpUpdate(self, dt):
+        currentState = self.currentState
+        self.direction = self.getInput()
+        if self.physicObject.onGround:
+            self.jump()
+            self.moveX(dt) 
+        elif self.physicObject.vel.y< 0:
+            self.moveX(dt)
+        elif self.physicObject.vel.y >= 0:
+            currentState = Player.states["fall"]
+        self.currentState = currentState
+    
+    def fallUpdate(self, dt):
+        currentState = self.currentState
+        self.direction = self.getInput()
+        if not self.physicObject.onGround:
+            self.moveX(dt)
+        else:
+            if self.direction.x != 0:
+                currentState = Player.states["move"]
+            else:
+                currentState = Player.states["IDLE"]
+        self.currentState = currentState
+
+    def jump(self):
+        self.physicObject.vel.y = -self.jumpSpeed      
