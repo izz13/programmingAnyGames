@@ -16,11 +16,7 @@ class Player:
         self.maxSpeed = 300
         self.acc = 700
         self.deAcc = 700
-<<<<<<< Updated upstream
-        self.jumpSpeed = 200
-=======
         self.jumpSpeed = 500
->>>>>>> Stashed changes
         self.currentState = Player.states["idle"]
 
     def update(self,dt,collisionObjects):
@@ -47,11 +43,7 @@ class Player:
             inputVector.x = -1
         if keys[pygame.K_d]:
             inputVector.x = 1
-<<<<<<< Updated upstream
-        if keys [pygame.K_w]:
-=======
         if keys[pygame.K_w]:
->>>>>>> Stashed changes
             inputVector.y = -1
         return inputVector
     
@@ -74,10 +66,6 @@ class Player:
                 currentState = Player.states["jump"]
             else:
                 currentState = Player.states["move"]
-<<<<<<< Updated upstream
-            currentState = Player.states["move"]
-=======
->>>>>>> Stashed changes
             self.direction = self.getInput()
         self.moveX(dt)
         self.currentState = currentState
@@ -93,21 +81,6 @@ class Player:
             currentState = Player.states["jump"]
         self.currentState = currentState
 
-<<<<<<< Updated upstream
-    def jumpUpdate(self, dt):
-        currentState = self.currentState
-        self.direction = self.getInput()
-        if self.physicObject.onGround:
-            self.jump()
-            self.moveX(dt) 
-        elif self.physicObject.vel.y< 0:
-            self.moveX(dt)
-        elif self.physicObject.vel.y >= 0:
-            currentState = Player.states["fall"]
-        self.currentState = currentState
-    
-    def fallUpdate(self, dt):
-=======
     def jumpUpdate(self,dt):
         currentState = self.currentState
         self.direction = self.getInput()
@@ -124,7 +97,6 @@ class Player:
         self.currentState = currentState
 
     def fallUpdate(self,dt):
->>>>>>> Stashed changes
         currentState = self.currentState
         self.direction = self.getInput()
         if not self.physicObject.onGround:
@@ -133,16 +105,8 @@ class Player:
             if self.direction.x != 0:
                 currentState = Player.states["move"]
             else:
-<<<<<<< Updated upstream
-                currentState = Player.states["IDLE"]
-        self.currentState = currentState
-
-    def jump(self):
-        self.physicObject.vel.y = -self.jumpSpeed      
-=======
                 currentState = Player.states["idle"]
         self.currentState = currentState
 
     def jump(self):
         self.physicObject.vel.y = -self.jumpSpeed
->>>>>>> Stashed changes
