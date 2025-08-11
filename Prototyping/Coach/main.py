@@ -34,6 +34,7 @@ def draw(screen):
         platform.draw(screen)
     rect = pygame.Rect(0,0,25,200)
     rect.bottomright = platforms[0].rect.topright
+    rect.y -= 248
     pygame.draw.rect(screen,"cyan",rect)
 
 
