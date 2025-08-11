@@ -1,6 +1,7 @@
 import pygame
 from pygame.math import Vector2
 from physicObject import PhysicObject
+from math import sqrt
 
 class Player:
     states = {
@@ -14,9 +15,10 @@ class Player:
         self.image = self.physicObject.surface
         self.direction = Vector2(0)
         self.maxSpeed = 300
-        self.acc = 700
-        self.deAcc = 700
+        self.acc = 5000
+        self.deAcc = 900
         self.jumpSpeed = 500
+        self.jumpHeight = 175
         self.currentState = Player.states["idle"]
 
     def update(self,dt,collisionObjects):
@@ -34,16 +36,25 @@ class Player:
         self.physicObject.update(dt,collisionObjects)
 
     def draw(self,screen):
+        if self.currentState == Player.states["idle"]:
+            self.image.fill("green")
+        if self.currentState == Player.states["move"]:
+            self.image.fill("red")
+        if self.currentState == Player.states["jump"]:
+            self.image.fill("yellow")
+        if self.currentState == Player.states["fall"]:
+            self.image.fill("purple")
         screen.blit(self.image,self.physicObject.rect)
 
     def getInput(self):
         inputVector = Vector2(0,0)
         keys = pygame.key.get_pressed()
+        keysClicked = pygame.key.get_just_pressed()
         if keys[pygame.K_a]:
             inputVector.x = -1
         if keys[pygame.K_d]:
             inputVector.x = 1
-        if keys[pygame.K_w]:
+        if keysClicked[pygame.K_w]:
             inputVector.y = -1
         return inputVector
     
@@ -59,7 +70,7 @@ class Player:
 
     def idleUpdate(self,dt):
         currentState = self.currentState
-        self.image.fill("green")
+        #self.image.fill("green")
         inputVector = self.getInput()
         if inputVector != Vector2(0):
             if inputVector.y == -1 and self.physicObject.onGround:
@@ -67,18 +78,25 @@ class Player:
             else:
                 currentState = Player.states["move"]
             self.direction = self.getInput()
+        if self.physicObject.vel.y > PhysicObject.TOLERANCE:
+            #print("changing to fall")
+            currentState = Player.states["fall"]
+
         self.moveX(dt)
         self.currentState = currentState
 
     def moveUpdate(self,dt):
         currentState = self.currentState
-        self.image.fill("red")
+        #self.image.fill("red")
         self.direction = self.getInput()
         self.moveX(dt)
         if self.direction == Vector2(0):
             currentState = Player.states["idle"]
         elif self.direction.y == -1 and self.physicObject.onGround:
             currentState = Player.states["jump"]
+        if self.physicObject.vel.y > PhysicObject.TOLERANCE:
+            #print("changing to fall")
+            currentState = Player.states["fall"]
         self.currentState = currentState
 
     def jumpUpdate(self,dt):
@@ -102,6 +120,7 @@ class Player:
         if not self.physicObject.onGround:
             self.moveX(dt)
         else:
+            self.moveX(dt)
             if self.direction.x != 0:
                 currentState = Player.states["move"]
             else:
@@ -109,4 +128,5 @@ class Player:
         self.currentState = currentState
 
     def jump(self):
-        self.physicObject.vel.y = -self.jumpSpeed
+        jumpSpeed = sqrt(2 * self.physicObject.GRAVITY * self.jumpHeight)
+        self.physicObject.vel.y = -jumpSpeed
