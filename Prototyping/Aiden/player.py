@@ -70,7 +70,7 @@ class Player:
 
     def idleUpdate(self,dt):
         currentState = self.currentState
-        #self.image.fill("green")
+       # self.image.fill("green")
         inputVector = self.getInput()
         if inputVector != Vector2(0):
             if inputVector.y == -1 and self.physicObject.onGround:
