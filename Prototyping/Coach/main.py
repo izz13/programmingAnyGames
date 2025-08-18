@@ -1,7 +1,7 @@
 import pygame,sys
 from player import Player
 from collisionObject import CollisionObject
-import animator
+
 
 pygame.init()
 WIDTH,HEIGHT = 800,600
@@ -11,8 +11,9 @@ clock = pygame.time.Clock()
 fps = 60
 
 dt = 0
+max_dt = .2
 
-testObject = Player([WIDTH/2,32],[48,64])
+testObject = Player([WIDTH/2,32],[42,64])
 
 platforms = []
 for i in range(3):
@@ -29,7 +30,7 @@ def update(dt):
         platform.update()
 
 def draw(screen):
-    screen.fill("black")
+    screen.fill("white")
     testObject.draw(screen)
     for platform in platforms:
         platform.draw(screen)
@@ -48,7 +49,7 @@ while isRunning:
             isRunning = False
     update(dt)
     draw(screen)
-    dt = clock.tick(fps)/1000
+    dt = min(clock.tick(fps)/1000,max_dt)
     pygame.display.flip()
 
 pygame.quit()
