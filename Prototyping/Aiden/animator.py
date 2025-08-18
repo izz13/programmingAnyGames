@@ -71,6 +71,8 @@ if __name__ == "__main__":
     fall = Animator("Prototyping/Aiden/playerFallFrames", 3, [48, 64], "Fall")
     fallRect = pygame.Rect(15, 250, 48, 64)
 
+    
+
 
     dt = 0
 

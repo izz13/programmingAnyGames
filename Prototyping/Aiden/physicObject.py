@@ -52,6 +52,7 @@ class PhysicObject:
                 new_dy = 0
                 self.rect.top = obj.rect.bottom + PhysicObject.TOLERANCE
                 self.pos = Vector2(self.rect.center)
+                break
             if obj.rect.colliderect(futureRectY) and dy > 0:
                 self.vel.y = 0
                 new_dy = 0
