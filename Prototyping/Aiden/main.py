@@ -2,6 +2,7 @@ import pygame,sys
 from player import Player
 from collisionObject import CollisionObject
 
+
 pygame.init()
 WIDTH,HEIGHT = 800,600
 
@@ -41,14 +42,14 @@ def draw(screen):
 
 isRunning = True
 while isRunning:
-    pygame.display.set_caption(str(clock.get_fps()))
+    pygame.display.set_caption(str(dt*1000))
     events = pygame.event.get()
     for event in events:
         if event.type == pygame.QUIT:
             isRunning = False
     update(dt)
     draw(screen)
-    dt = min(clock.tick(fps)/1000, max_dt)
+    dt = min(clock.tick(fps)/1000,max_dt)
     pygame.display.flip()
 
 pygame.quit()

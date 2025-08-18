@@ -9,7 +9,8 @@ class Player:
         "idle" : 0,
         "move" : 1,
         "jump" : 2,
-        "fall" : 3
+        "fall" : 3,
+        "attack": 4
     }
     def __init__(self,startPos,size):
         self.physicObject = PhysicObject(startPos,size)
@@ -22,13 +23,16 @@ class Player:
         self.jumpHeight = 175
         self.currentState = Player.states["idle"]
         self.facingLeft = True
+        self.tryAttack = False
         self.setAnimationClips()
+        self.currentAnimation = self.idleAnimation
 
     def setAnimationClips(self):
         self.idleAnimation = Animator("Prototyping/Aiden/playerIdleFrames", 10, (32, 64), "Idle")
         self.runAnimation = Animator("Prototyping/Aiden/playerRunFrames", 10, (48, 64), "Run")
         self.jumpAnimation = Animator("Prototyping/Aiden/playerJumpFrames", 7, (48, 64), "Jump", loop=False)
         self.fallAnimation = Animator("Prototyping/Aiden/playerFallFrames", 3, (48, 64), "Fall", loop=False)
+        self.attackAnimation = Animator("Prototyping/Aiden/playerAttackFrames", 10, (67, 72), "Attack", loop=False)
         
 
 
@@ -44,21 +48,33 @@ class Player:
             self.jumpUpdate(dt)
         elif self.currentState == Player.states["fall"]:
             self.fallUpdate(dt)
+        elif self.currentState == Player.states["attack"]:
+            self.attackUpdate(dt)
         self.physicObject.update(dt,collisionObjects)
 
     def draw(self,screen):
+        rect = self.getDrawRect()
         if self.currentState == Player.states["idle"]:
-            self.idleAnimation.draw(screen, self.physicObject.rect, self.facingLeft)
+            self.currentAnimation = self.idleAnimation
         if self.currentState == Player.states["move"]:
-            self.runAnimation.draw(screen, self.physicObject.rect, self.facingLeft)
+            self.currentAnimation = self.runAnimation
         if self.currentState == Player.states["jump"]:
-            self.jumpAnimation.draw(screen, self.physicObject.rect, self.facingLeft)
+            self.currentAnimation = self.jumpAnimation
         if self.currentState == Player.states["fall"]:
-            self.fallAnimation.draw(screen, self.physicObject.rect, self.facingLeft)
+            self.currentAnimation = self.fallAnimation
+        if self.currentState == Player.states["attack"]:
+            self.currentAnimation = self.attackAnimation
+        self.currentAnimation.draw(screen,rect,self.facingLeft)
+        
         #screen.blit(self.image,self.physicObject.rect)
+
+    def getDrawRect(self):
+        currentImage = self.currentAnimation.frames[self.currentAnimation]
+        return self.physicObject.rect
 
     def getInput(self):
         inputVector = Vector2(0,0)
+        self.tryAttack = False
         keys = pygame.key.get_pressed()
         keysClicked = pygame.key.get_just_pressed()
         if keys[pygame.K_a]:
@@ -69,6 +85,8 @@ class Player:
             inputVector.x = 1
         if keysClicked[pygame.K_w]:
             inputVector.y = -1
+        if keysClicked[pygame.K_SPACE]:
+            self.tryAttack = True
         return inputVector
     
     def moveX(self,dt):
@@ -92,6 +110,9 @@ class Player:
             else:
                 currentState = Player.states["move"]
             self.direction = self.getInput()
+        elif self.tryAttack:
+            self.idleAnimation.reset()
+            currentState = Player.states["attack"]
         if self.physicObject.vel.y > PhysicObject.TOLERANCE:
             #print("changing to fall")
             self.idleAnimation.reset()
@@ -109,6 +130,9 @@ class Player:
         if self.direction == Vector2(0):
             self.runAnimation.reset()
             currentState = Player.states["idle"]
+        elif self.tryAttack:
+            self.runAnimation.reset()
+            currentState = Player.states["attack"]
         elif self.direction.y == -1 and self.physicObject.onGround:
             self.runAnimation.reset()
             currentState = Player.states["jump"]
@@ -150,6 +174,16 @@ class Player:
                 self.fallAnimation.reset()
                 currentState = Player.states["idle"]
         self.fallAnimation.update(dt)
+        self.currentState = currentState
+
+    def attackUpdate(self, dt):
+        currentState = self.currentState
+        self.direction = Vector2(0)
+        self.moveX(dt)
+        if self.attackAnimation.frameNumber >= self.attackAnimation.totalFrames-1:
+            self.attackAnimation.reset()
+            currentState = Player.states["idle"]
+        self.attackAnimation.update(dt)
         self.currentState = currentState
 
     def jump(self):
