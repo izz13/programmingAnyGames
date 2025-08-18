@@ -69,6 +69,10 @@ if __name__ == "__main__":
     fall = Animator("Prototyping\Colin\playerFallFrames", 3, [48, 64], "Fall")
     fallRect = pygame.Rect(15, 250, 48, 64)
 
+    attack = Animator("Prototyping\Colin\playerAttackFrames", 10, [48, 64], "Attack")
+    attackRect = pygame.Rect(15, 325, 48, 64)
+
+
     dt = 0
 
     isRunning = True
@@ -88,6 +92,8 @@ if __name__ == "__main__":
         jump.draw(screen, jumpRect, False)
         fall.update(dt)
         fall.draw(screen, fallRect, False)
+        attack.update(dt)
+        attack.draw(screen, attackRect, False)
         dt = clock.tick(fps)/1000
         pygame.display.update()
         
