@@ -30,7 +30,7 @@ def update(dt):
         platform.update()
 
 def draw(screen):
-    screen.fill("white")
+    screen.fill("black")
     testObject.draw(screen)
     for platform in platforms:
         platform.draw(screen)
