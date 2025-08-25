@@ -30,9 +30,11 @@ class Player:
     def setAnimationClips(self):
         self.idleAnimation = Animator("Prototyping\Colin\playerIdleFrames", 10, [32, 64], "Idle")
         self.runAnimation = Animator("Prototyping\Colin\playerRunFrames", 10, [48, 64], "Run")
+        self.runAnimation.animationSpeed = 2
         self.jumpAnimation = Animator("Prototyping\Colin\playerJumpFrames", 7, [48, 64], "Jump", loop = False)
         self.fallAnimation = Animator("Prototyping\Colin\playerFallFrames", 3, [48, 64], "Fall", loop = False)
         self.attackAnimation = Animator("Prototyping\Colin\playerAttackFrames", 10, [64, 72], "Attack", loop = False)
+        self.attackAnimation.animationSpeed = 1.5
 
     def update(self,dt,collisionObjects):
         # self.direction = self.getInput()
@@ -51,7 +53,6 @@ class Player:
         self.physicObject.update(dt,collisionObjects)
 
     def draw(self,screen):
-        rect = self.getDrawRect()
         if self.currentState == Player.states["idle"]:
             self.currentAnimation = self.idleAnimation
         if self.currentState == Player.states["move"]:
@@ -62,12 +63,20 @@ class Player:
             self.currentAnimation = self.fallAnimation
         if self.currentState == Player.states["attack"]:
             self.currentAnimation = self.attackAnimation
+        rect = self.getDrawRect()
         self.currentAnimation.draw(screen,rect,self.facingLeft)
         #screen.blit(self.image,self.physicObject.rect)
 
     def getDrawRect(self):
         currentImage = self.currentAnimation.frames[self.currentAnimation.frameNumber]
-        return self.physicObject.rect
+        if self.facingLeft:
+            flippedCurrentImage = pygame.transform.flip(currentImage,True,False)
+            drawRect = flippedCurrentImage.get_rect()
+            drawRect.topright = self.physicObject.rect.topright
+        else:
+            drawRect = currentImage.get_rect()
+            drawRect.topleft = self.physicObject.rect.topleft
+        return drawRect
 
     def getInput(self):
         inputVector = Vector2(0,0)
