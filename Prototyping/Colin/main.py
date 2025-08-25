@@ -32,7 +32,12 @@ p = CollisionObject([WIDTH,HEIGHT/2],[1, HEIGHT])
 platforms.append(p)
 p = CollisionObject([0, HEIGHT/2],[1, HEIGHT])
 platforms.append(p)
-
+for i in range(3):
+    p = CollisionObject([WIDTH/2 + i*200,HEIGHT/2 + 200 - i*150],[100,32])
+    platforms.append(p)
+for i in range(3):
+    p = CollisionObject([WIDTH/2 + 100 - i*200,HEIGHT/2 -200 - i*150],[100,32])
+    platforms.append(p)
 
 
 def update(dt, world):
