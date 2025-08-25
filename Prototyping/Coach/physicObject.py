@@ -68,9 +68,7 @@ class PhysicObject:
                 self.vel.x = 0
                 new_dx = 0
                 self.rect.right = obj.rect.left
-                self.pos = Vector2(self.rect.center)
-                
-            
+                self.pos = Vector2(self.rect.center)   
         self.onGround = onGround
         return new_dx,new_dy
 
