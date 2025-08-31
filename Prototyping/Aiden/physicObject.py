@@ -6,6 +6,8 @@ from pygame.math import Vector2
 class PhysicObject:
     GRAVITY = 2000
     TOLERANCE = 1
+    MAX_MOVEMENT = 64
+    MAX_Y_VELOCITY = 16
     def __init__(self,startPos,size):
         self.pos = Vector2(startPos)
         self.size = Vector2(size)
@@ -31,45 +33,57 @@ class PhysicObject:
         self.acc.y = PhysicObject.GRAVITY
         self.vel += self.acc*dt
         dy = self.vel.y*dt
+        if dy > PhysicObject.MAX_Y_VELOCITY:
+            dy = PhysicObject.MAX_Y_VELOCITY
         dx = self.vel.x*dt
         dx,dy = self.checkCollision(dt,dx,dy)
+        #dx,dy = self.new_checkCollision(dt,dx,dy)
         if abs(dx) < PhysicObject.TOLERANCE:
             dx = 0
         if abs(dy) < PhysicObject.TOLERANCE:
             dy = 0
         self.pos.x += dx
         self.pos.y += dy
-              
+
     def checkCollision(self,dt,dx,dy):
         new_dy = dy
         new_dx = dx
         onGround = False
-        futureRectY = self.getNextRect(0,dy)
-        futureRectX = self.getNextRect(dx,0)
+        currentRect = self.rect
+        futureRectY = self.getNextRect(0,dy,currentRect)
+        futureRectX = self.getNextRect(dx,0,currentRect)
         for obj in self.collisionObjects:
             if obj.rect.colliderect(futureRectY) and dy < 0:
                 self.vel.y = 0
                 new_dy = 0
-                self.rect.top = obj.rect.bottom + PhysicObject.TOLERANCE
-                self.pos = Vector2(self.rect.center)
-                break
-            if obj.rect.colliderect(futureRectY) and dy > 0:
-                self.vel.y = 0
-                new_dy = 0
-                self.rect.bottom = obj.rect.top
-                self.pos = Vector2(self.rect.center)
-                onGround = True
+                currentRect.top = obj.rect.bottom + PhysicObject.TOLERANCE
+                
+                futureRectY = self.getNextRect(0,dy,currentRect)
+                futureRectX = self.getNextRect(dx,0,currentRect)
             if obj.rect.colliderect(futureRectX) and dx < 0:
                 self.vel.x = 0
                 new_dx = 0
-                self.rect.left = obj.rect.right
-                self.pos = Vector2(self.rect.center)    
+                currentRect.left = obj.rect.right
+                
+                futureRectY = self.getNextRect(0,dy,currentRect)
+                futureRectX = self.getNextRect(dx,0,currentRect)
             if obj.rect.colliderect(futureRectX) and dx > 0:
                 self.vel.x = 0
                 new_dx = 0
-                self.rect.right = obj.rect.left
-                self.pos = Vector2(self.rect.center)
-            
+                currentRect.right = obj.rect.left
+                
+                futureRectY = self.getNextRect(0,dy,currentRect)
+                futureRectX = self.getNextRect(dx,0,currentRect)
+            if obj.rect.colliderect(futureRectY) and dy > 0:
+                self.vel.y = 0
+                new_dy = 0
+                currentRect.bottom = obj.rect.top
+                
+                onGround = True
+                futureRectY = self.getNextRect(0,dy,currentRect)
+                futureRectX = self.getNextRect(dx,0,currentRect)
+        self.pos = Vector2(currentRect.center)
+        self.rect = currentRect
         self.onGround = onGround
         return new_dx,new_dy
 
@@ -77,10 +91,10 @@ class PhysicObject:
         self.normal = Vector2(0,-1)
         return self.normal
 
-    def getNextRect(self,dx,dy):
+    def getNextRect(self,dx,dy,rect):
         if abs(dy) < PhysicObject.TOLERANCE:
             if dy > 0:
                 dy = PhysicObject.TOLERANCE
             else:
                 dy = -1*PhysicObject.TOLERANCE
-        return pygame.Rect(self.rect.x + dx, self.rect.y + dy, self.rect.width,self.rect.height)
+        return pygame.Rect(rect.x + dx, rect.y + dy, rect.width,rect.height)

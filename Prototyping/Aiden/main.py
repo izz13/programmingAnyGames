@@ -29,10 +29,10 @@ for i in range(3):
     p = CollisionObject([WIDTH/2 + WIDTH*i/4,HEIGHT -200 - i*32],[WIDTH - WIDTH*i/4 - 150,32])
     platforms.append(p)
 
-p = CollisionObject([WIDTH, HEIGHT], [ 1, HEIGHT + 600])
+p = CollisionObject([WIDTH + 16, HEIGHT], [ 32, HEIGHT + 600])
 platforms.append(p)
 
-p = CollisionObject([0, HEIGHT], [ 1, HEIGHT + 600])
+p = CollisionObject([-16, HEIGHT], [ 32, HEIGHT + 600])
 platforms.append(p)
 
 
@@ -50,7 +50,7 @@ def draw(world):
 
 isRunning = True
 while isRunning:
-    pygame.display.set_caption(str(cam.vel))
+    pygame.display.set_caption(str(testObject.physicObject.rect.center))
     events = pygame.event.get()
     for event in events:
         if event.type == pygame.QUIT:

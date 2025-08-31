@@ -20,7 +20,9 @@ class Player:
         self.acc = 5000
         self.deAcc = 900
         self.jumpSpeed = 500
-        self.jumpHeight = 175
+        self.jumpMinHeight = 175
+        self.jumpMaxHeight = 250
+        self.jumpHeight = self.jumpMinHeight
         self.currentState = Player.states["idle"]
         self.facingLeft = True
         self.tryAttack = False
@@ -156,7 +158,7 @@ class Player:
         self.direction = self.getInput()
         if self.physicObject.onGround:
             #print("trying to jump")
-            self.jump()
+            self.jump(self.jumpMinHeight)
             self.moveX(dt)
         elif self.physicObject.vel.y < 0:
             #print("currently jumping")
@@ -194,6 +196,6 @@ class Player:
         self.attackAnimation.update(dt)
         self.currentState = currentState
 
-    def jump(self):
-        jumpSpeed = sqrt(2 * self.physicObject.GRAVITY * self.jumpHeight)
+    def jump(self,height):
+        jumpSpeed = sqrt(2 * self.physicObject.GRAVITY * height)
         self.physicObject.vel.y = -jumpSpeed
