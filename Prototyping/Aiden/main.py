@@ -35,6 +35,9 @@ platforms.append(p)
 p = CollisionObject([-16, HEIGHT], [ 32, HEIGHT + 600])
 platforms.append(p)
 
+p = CollisionObject([30, HEIGHT+16], [32, 2])
+platforms.append(p)
+
 
 def update(dt, world):
     cam.update(world, dt, testObject.physicObject)
