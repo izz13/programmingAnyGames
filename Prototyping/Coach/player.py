@@ -36,7 +36,7 @@ class Player:
         self.jumpAnimation = Animator("Prototyping/Coach/playerJumpFrames",7,[48,64],"Jump",loop = False)
         self.fallAnimation = Animator("Prototyping/Coach/playerFallFrames",3,[48,64],"Fall",loop = False)
         self.attackAnimation = Animator("Prototyping/Coach/playerAttackFrames",10,[64,72],"Attack",loop = False)
-        self.attackAnimation.animationSpeed = 1.5
+        self.attackAnimation.animationSpeed = 2
 
     def update(self,dt,collisionObjects):
         # self.direction = self.getInput()
