@@ -2,10 +2,11 @@ import pygame,sys
 from player import Player
 from collisionObject import CollisionObject
 from camera import Camera
+import math
 
 
 pygame.init()
-WIDTH,HEIGHT = 1200, 1200
+WIDTH,HEIGHT = 2000, 1200
 SWIDTH, SHEIGHT = 800, 640
 
 
@@ -35,8 +36,6 @@ platforms.append(p)
 p = CollisionObject([-16, HEIGHT], [ 32, HEIGHT + 600])
 platforms.append(p)
 
-p = CollisionObject([30, HEIGHT+16], [32, 2])
-platforms.append(p)
 
 
 def update(dt, world):
@@ -45,12 +44,38 @@ def update(dt, world):
     for platform in platforms:
         platform.update()
 
+t = 0
 def draw(world):
-    world.fill("dark grey ")
+    global t
+    t+=dt
+    world.fill("black")
+    startColor = pygame.math.Vector3(250,50,50)
+    endColor = pygame.math.Vector3(50,50,250)
+    iteration = abs(math.sin((2*math.pi *t)/(2)))
+    color = startColor.lerp(endColor,pygame.math.clamp(iteration,0,1))
+    numDrawnPoints = 0
+    for i in range(0,WIDTH,100):
+        for j in range(0,HEIGHT,100):
+            if cam.rect.collidepoint(i,j):
+                pygame.draw.circle(world,color,[i ,j],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
+                #pygame.draw.circle(world,"white",[i ,j],3)
+                numDrawnPoints += 1
     testObject.draw(world)
+    #print(numDrawnPoints)
     for platform in platforms:
         platform.draw(world)
+    playerPos = testObject.physicObject.rect.center
+    pygame.draw.circle(world,color,[-75* math.sin((2*math.pi *t)/(2)) + playerPos[0] ,55 * math.cos((2*math.pi *t)*3) + playerPos[1]],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
+    pygame.draw.circle(world,color,[-75* math.sin((2*math.pi *t)/(2)) + playerPos[0] ,15 * math.cos((2*math.pi *t)*3) + playerPos[1]],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
 
+    pygame.draw.circle(world,color,[-75* math.sin((2*math.pi *t)/(2)) + playerPos[0] ,45 * math.cos((2*math.pi *t)*3) + playerPos[1]],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
+    pygame.draw.circle(world,color,[-75* math.sin((2*math.pi *t)/(1)) + playerPos[0] ,25 * math.cos((2*math.pi *t)*3) + playerPos[1]],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
+    pygame.draw.circle(world,color,[75* math.sin((2*math.pi *t)/(2)) + playerPos[0] ,90 * math.cos((2*math.pi *t)*3) + playerPos[1]],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
+    pygame.draw.circle(world,color,[75* math.sin((2*math.pi *t)/(3)) + playerPos[0] ,30 * math.cos((2*math.pi *t)*3) + playerPos[1]],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
+    pygame.draw.circle(world,color,[-75* math.sin((2*math.pi *t)/(2)) + playerPos[0] ,85 * math.cos((2*math.pi *t)*3) + playerPos[1]],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
+    pygame.draw.circle(world,color,[-75* math.sin((2*math.pi *t)/(1)) + playerPos[0] ,25 * math.cos((2*math.pi *t)*3) + playerPos[1]],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
+    pygame.draw.circle(world,color,[75* math.sin((2*math.pi *t)/(2)) + playerPos[0] ,10 * math.cos((2*math.pi *t)*3) + playerPos[1]],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
+    pygame.draw.circle(world,color,[75* math.sin((2*math.pi *t)/(3)) + playerPos[0] ,70 * math.cos((2*math.pi *t)*3) + playerPos[1]],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
 isRunning = True
 while isRunning:
     pygame.display.set_caption(str(testObject.physicObject.rect.center))

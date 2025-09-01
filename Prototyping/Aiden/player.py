@@ -17,10 +17,10 @@ class Player:
         self.image = self.physicObject.surface
         self.direction = Vector2(0)
         self.maxSpeed = 300
-        self.acc = 5000
+        self.acc = 1000
         self.deAcc = 900
         self.jumpSpeed = 500
-        self.jumpHeight = 175
+        self.jumpHeight = 250
         self.currentState = Player.states["idle"]
         self.facingLeft = True
         self.tryAttack = False
