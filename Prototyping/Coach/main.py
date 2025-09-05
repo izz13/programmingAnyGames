@@ -7,7 +7,7 @@ import math
 
 
 pygame.init()
-WIDTH,HEIGHT = 2000,2000
+WIDTH,HEIGHT = 2000,1200
 SCREEN_WIDTH,SCREEN_HEIGHT = 800,640
 
 
@@ -32,6 +32,10 @@ for i in range(3):
 for i in range(3):
     p = CollisionObject([WIDTH/2 + WIDTH*i/4,HEIGHT -200 - i*32],[WIDTH - WIDTH*i/4 - 150,32])
     platforms.append(p)
+leftWall = CollisionObject([-250,HEIGHT/2],[500,HEIGHT])
+rightWall = CollisionObject([WIDTH + 250, HEIGHT/2],[500,HEIGHT])
+platforms.append(leftWall)
+platforms.append(rightWall)
 
 # for i in range(32):
 #     width = WIDTH/16
@@ -57,27 +61,34 @@ def update(dt,world):
     testObject.update(dt,platforms)
     for platform in platforms:
         platform.update()
+    if not world.get_rect().collidepoint(testObject.physicObject.rect.center):
+        print(testObject.physicObject.rect.center)
+        print(testObject.physicObject.vel)
+        pygame.quit()
 t = 0
-def draw(world):
-    global t
+startColor = pygame.math.Vector3(randint(0,255),randint(0,255),randint(0,255))
+endColor = pygame.math.Vector3(255 - startColor.x,255 - startColor.y,255 - startColor.z)
+ballStartColor = pygame.math.Vector3(randint(0,255),randint(0,255),randint(0,255))
+ballEndColor = pygame.math.Vector3(255 - ballStartColor.x,255 - ballStartColor.y,255 - ballStartColor.z)
+def draw(world : pygame.Surface):
+    global t,startColor,endColor
     t+=dt
     world.fill("black")
-    startColor = pygame.math.Vector3(250,50,50)
-    endColor = pygame.math.Vector3(50,50,250)
     iteration = abs(math.sin((2*math.pi *t)/(2)))
-    color = startColor.lerp(endColor,pygame.math.clamp(iteration,0,1))
+    color = startColor.lerp(endColor,pygame.math.clamp(iteration,0,1))  
     numDrawnPoints = 0
     for i in range(0,WIDTH,100):
         for j in range(0,HEIGHT,100):
             if cam.rect.collidepoint(i,j):
                 pygame.draw.circle(world,color,[i ,j],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
+                #pygame.draw.circle(world,"white",[i ,j],3)
                 numDrawnPoints += 1
     testObject.draw(world)
-    print(numDrawnPoints)
     for platform in platforms:
         platform.draw(world)
-    #pygame.draw.circle(world,color,[75* math.sin((2*math.pi *t)/(10)) + WIDTH/2 ,75 * math.cos((2*math.pi *t)/(1)) + WIDTH/2],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
-    #pygame.draw.circle(world,color,[-75* math.sin((2*math.pi *t)/(10)) + WIDTH/2 ,55 * math.cos((2*math.pi *t)/(10)) + WIDTH/2],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
+    playerPos = testObject.physicObject.rect.center
+    #pygame.draw.circle(world,color,[75* math.sin((2*math.pi *t)/(10)) + playerPos[0] ,75 * math.cos((2*math.pi *t)/(1)) + playerPos[1]],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
+    #pygame.draw.circle(world,ballColor,[-75* math.sin((2*math.pi *t)/(1)) + playerPos[0] ,55 * math.cos((2*math.pi *t)/(10)) + playerPos[1]],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
     
 
 

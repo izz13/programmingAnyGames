@@ -6,7 +6,7 @@ from pygame.math import Vector2
 class PhysicObject:
     GRAVITY = 2000
     TOLERANCE = 1
-    MAX_MOVEMENT = 64
+    MAX_MOVEMENT = 32
     MAX_Y_VELOCITY = 16
     def __init__(self,startPos,size):
         self.pos = Vector2(startPos)
@@ -53,37 +53,35 @@ class PhysicObject:
         futureRectY = self.getNextRect(0,dy,currentRect)
         futureRectX = self.getNextRect(dx,0,currentRect)
         for obj in self.collisionObjects:
-            if obj.rect.colliderect(futureRectY) and dy < 0:
-                self.vel.y = 0
-                new_dy = 0
-                currentRect.top = obj.rect.bottom + PhysicObject.TOLERANCE
-                
-                futureRectY = self.getNextRect(0,dy,currentRect)
-                futureRectX = self.getNextRect(dx,0,currentRect)
             if obj.rect.colliderect(futureRectX) and dx < 0:
                 self.vel.x = 0
                 new_dx = 0
                 currentRect.left = obj.rect.right
-                
                 futureRectY = self.getNextRect(0,dy,currentRect)
                 futureRectX = self.getNextRect(dx,0,currentRect)
             if obj.rect.colliderect(futureRectX) and dx > 0:
                 self.vel.x = 0
                 new_dx = 0
                 currentRect.right = obj.rect.left
-                
+                futureRectY = self.getNextRect(0,dy,currentRect)
+                futureRectX = self.getNextRect(dx,0,currentRect)
+            if obj.rect.colliderect(futureRectY) and dy < 0:
+                self.vel.y = 0
+                new_dy = 0
+                currentRect.top = obj.rect.bottom + PhysicObject.TOLERANCE
                 futureRectY = self.getNextRect(0,dy,currentRect)
                 futureRectX = self.getNextRect(dx,0,currentRect)
             if obj.rect.colliderect(futureRectY) and dy > 0:
                 self.vel.y = 0
                 new_dy = 0
                 currentRect.bottom = obj.rect.top
-                
                 onGround = True
                 futureRectY = self.getNextRect(0,dy,currentRect)
                 futureRectX = self.getNextRect(dx,0,currentRect)
-        self.pos = Vector2(currentRect.center)
-        self.rect = currentRect
+        distance = Vector2.distance_to(Vector2(currentRect.center),Vector2(self.rect.center))
+        if distance < PhysicObject.MAX_MOVEMENT:
+            self.pos = Vector2(currentRect.center)
+            self.rect = currentRect
         self.onGround = onGround
         return new_dx,new_dy
 
