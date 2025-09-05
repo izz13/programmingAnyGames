@@ -54,30 +54,34 @@ class PhysicObject:
         futureRectX = self.getNextRect(dx,0,currentRect)
         for obj in self.collisionObjects:
             if obj.rect.colliderect(futureRectX) and dx < 0:
-                self.vel.x = 0
-                new_dx = 0
-                currentRect.left = obj.rect.right
-                futureRectY = self.getNextRect(0,dy,currentRect)
-                futureRectX = self.getNextRect(dx,0,currentRect)
+                if abs(currentRect.left - obj.rect.right) < PhysicObject.MAX_MOVEMENT:
+                    self.vel.x = 0
+                    new_dx = 0
+                    currentRect.left = obj.rect.right
+                    futureRectY = self.getNextRect(0,dy,currentRect)
+                    futureRectX = self.getNextRect(dx,0,currentRect)
             if obj.rect.colliderect(futureRectX) and dx > 0:
-                self.vel.x = 0
-                new_dx = 0
-                currentRect.right = obj.rect.left
-                futureRectY = self.getNextRect(0,dy,currentRect)
-                futureRectX = self.getNextRect(dx,0,currentRect)
+                if abs(currentRect.right - obj.rect.left) < PhysicObject.MAX_MOVEMENT:
+                    self.vel.x = 0
+                    new_dx = 0
+                    currentRect.right = obj.rect.left
+                    futureRectY = self.getNextRect(0,dy,currentRect)
+                    futureRectX = self.getNextRect(dx,0,currentRect)
             if obj.rect.colliderect(futureRectY) and dy < 0:
-                self.vel.y = 0
-                new_dy = 0
-                currentRect.top = obj.rect.bottom + PhysicObject.TOLERANCE
-                futureRectY = self.getNextRect(0,dy,currentRect)
-                futureRectX = self.getNextRect(dx,0,currentRect)
+                if abs(currentRect.top - obj.rect.bottom) < PhysicObject.MAX_MOVEMENT:
+                    self.vel.y = 0
+                    new_dy = 0
+                    currentRect.top = obj.rect.bottom + PhysicObject.TOLERANCE
+                    futureRectY = self.getNextRect(0,dy,currentRect)
+                    futureRectX = self.getNextRect(dx,0,currentRect)
             if obj.rect.colliderect(futureRectY) and dy > 0:
-                self.vel.y = 0
-                new_dy = 0
-                currentRect.bottom = obj.rect.top
-                onGround = True
-                futureRectY = self.getNextRect(0,dy,currentRect)
-                futureRectX = self.getNextRect(dx,0,currentRect)
+                if abs(currentRect.bottom - obj.rect.top) < PhysicObject.MAX_MOVEMENT:
+                    self.vel.y = 0
+                    new_dy = 0
+                    currentRect.bottom = obj.rect.top
+                    onGround = True
+                    futureRectY = self.getNextRect(0,dy,currentRect)
+                    futureRectX = self.getNextRect(dx,0,currentRect)
         distance = Vector2.distance_to(Vector2(currentRect.center),Vector2(self.rect.center))
         if distance < PhysicObject.MAX_MOVEMENT:
             self.pos = Vector2(currentRect.center)
