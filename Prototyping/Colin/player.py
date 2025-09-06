@@ -10,7 +10,8 @@ class Player:
         "move" : 1,
         "jump" : 2,
         "fall" : 3,
-        "attack" : 4
+        "attack" : 4,
+        "sliding" : 5
     }
     def __init__(self,startPos,size):
         self.physicObject = PhysicObject(startPos,size)
@@ -24,6 +25,7 @@ class Player:
         self.currentState = Player.states["idle"]
         self.facingLeft = True
         self.tryAttack = False
+        self.slidingSpeed = 1000
         self.setAnimationClips()
         self.currentAnimation = self.idleAnimation
 
@@ -34,7 +36,8 @@ class Player:
         self.jumpAnimation = Animator("Prototyping\Colin\playerJumpFrames", 7, [48, 64], "Jump", loop = False)
         self.fallAnimation = Animator("Prototyping\Colin\playerFallFrames", 3, [48, 64], "Fall", loop = False)
         self.attackAnimation = Animator("Prototyping\Colin\playerAttackFrames", 10, [64, 72], "Attack", loop = False)
-        self.attackAnimation.animationSpeed = 1.5
+        self.attackAnimation.animationSpeed = 2
+        self.slideAnimation = Animator("Prototyping\Colin\playerSlidingFrames", 10, [48, 64], "Slide", loop = False)
 
     def update(self,dt,collisionObjects):
         # self.direction = self.getInput()
@@ -63,6 +66,8 @@ class Player:
             self.currentAnimation = self.fallAnimation
         if self.currentState == Player.states["attack"]:
             self.currentAnimation = self.attackAnimation
+        if self.currentState == Player.states["sliding"]:
+            self.currentState = self.slideAnimation
         rect = self.getDrawRect()
         self.currentAnimation.draw(screen,rect,self.facingLeft)
         #screen.blit(self.image,self.physicObject.rect)
@@ -72,10 +77,16 @@ class Player:
         if self.facingLeft:
             flippedCurrentImage = pygame.transform.flip(currentImage,True,False)
             drawRect = flippedCurrentImage.get_rect()
-            drawRect.topright = self.physicObject.rect.topright
+            if self.currentState == Player.states["sliding"]:
+                drawRect,bottomright = self.physicObject.rect.bottomright
+            else:
+                drawRect.topright = self.physicObject.rect.topright
         else:
             drawRect = currentImage.get_rect()
-            drawRect.topleft = self.physicObject.rect.topleft
+            if self.currentState == Player.states["sliding"]:
+                drawRect.bottomleft =self.physicObject.rect.bottomleft
+            else:
+                drawRect.topleft = self.physicObject.rect.topleft
         return drawRect
 
     def getInput(self):
@@ -91,6 +102,8 @@ class Player:
             inputVector.x = 1
         if keysClicked[pygame.K_w]:
             inputVector.y = -1
+        if keysClicked[pygame.K_s]:
+            inputVector.y = 1
         if keysClicked[pygame.K_SPACE]:
             self.tryAttack = True
         return inputVector

@@ -2,10 +2,12 @@ import pygame,sys
 from player import Player
 from collisionObject import CollisionObject
 from camera import Camera
+from random import randint
+import math
 
 
 pygame.init()
-WIDTH, HEIGHT = 5000, 1200
+WIDTH, HEIGHT = 2000, 1200
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 640
 
 
@@ -46,12 +48,30 @@ def update(dt, world):
     for platform in platforms:
         platform.update()
 
+t = 0
+#startColor = pygame.math.Vector3(randint(0,255),randint(0,255),randint(0,255))
+#endColor = pygame.math.Vector3(255 - startColor.x,255 - startColor.y,255 - startColor.z)
 def draw(world):
+    global t
+    t+=dt
     world.fill("black")
+    startColor = pygame.math.Vector3(250,50,50)
+    endColor = pygame.math.Vector3(50,50,250)
+    iteration = abs(math.sin((2*math.pi *t)/(2)))
+    color = startColor.lerp(endColor,pygame.math.clamp(iteration,0,1))
+    numDrawnPoints = 0
+    for i in range(0,WIDTH,100):
+        for j in range(0,HEIGHT,100):
+            if cam.rect.collidepoint(i,j):
+                pygame.draw.circle(world,color,[i ,j],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
+                #pygame.draw.circle(world,"white",[i ,j],3)
+                numDrawnPoints += 1
     testObject.draw(world)
+    print(numDrawnPoints)
     for platform in platforms:
         platform.draw(world)
-
+    playerPos = testObject.physicObject.rect.center
+    pygame.draw.circle(world,color,[-75* math.sin((2*math.pi *t)/(1)) + playerPos[0] ,55 * math.cos((2*math.pi *t)/(10)) + playerPos[1]],3 + 7 * abs(math.sin((2*math.pi *t)/(2))))
         
 
 isRunning = True
