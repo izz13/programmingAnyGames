@@ -26,6 +26,9 @@ class Player:
         self.facingLeft = True
         self.tryAttack = False
         self.slidingSpeed = 1000
+        self.slideDirection = 0
+        self.totalSlideDistance = 125
+        self.currentSlideDistance = 125
         self.setAnimationClips()
         self.currentAnimation = self.idleAnimation
 
@@ -53,6 +56,8 @@ class Player:
             self.fallUpdate(dt)
         elif self.currentState == Player.states["attack"]:
             self.attackUpdate(dt)
+        elif self.currentState == Player.states["sliding"]:
+            self.slidingUpdate(dt)
         self.physicObject.update(dt,collisionObjects)
 
     def draw(self,screen):
@@ -126,6 +131,8 @@ class Player:
             self.idleAnimation.reset()
             if inputVector.y == -1 and self.physicObject.onGround:
                 currentState = Player.states["jump"]
+            elif inputVector.y == 1 and self.physicObject.onGround:
+                currentState = Player.states["sliding"]
             else:
                 currentState = Player.states["move"]
             self.direction = self.getInput()
@@ -156,6 +163,9 @@ class Player:
         elif self.direction.y == -1 and self.physicObject.onGround:
             self.runAnimation.reset()
             currentState = Player.states["jump"]
+        elif self.direction.y == 1 and self.physicObject.onGround:
+            self.runAnimation.reset()
+            currentState = Player.states["sliding"]
         if self.physicObject.vel.y > PhysicObject.TOLERANCE:
             #print("changing to fall")
             self.runAnimation.reset()
@@ -205,6 +215,24 @@ class Player:
             currentState = Player.states["idle"]
         self.attackAnimation.update(dt)
         self.currentState = currentState
+
+    def slidingUpdate(self, dt):
+        currentState = self.currentState
+        if self.facingLeft:
+            self.slideDirection = -1
+        else:
+            self.slideDirection = 1
+        vel_x = self.slideDirection*self.slidingSpeed*dt
+        if self.currentSlideDistance + vel_x < self.totalSlideDistance:
+            self.currentSlideDistance += vel_x
+            self.physicObject.ve.x = vel_x
+        else:
+            self.slideAnimation.reset()
+            currenState = Player.states["idle"]
+            self.currentSlideDistance = 0
+        self.slidAnimation.update(dt)
+        self.currentState = currentState
+
 
     def jump(self):
         jumpSpeed = sqrt(2 * self.physicObject.GRAVITY * self.jumpHeight)
