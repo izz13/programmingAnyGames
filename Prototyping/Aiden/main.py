@@ -57,6 +57,9 @@ platforms.append(p)
 p = CollisionObject([750, 900], [300, 20])
 platforms.append(p)
 
+p = CollisionObject([600, 1240], [100,1000])
+platforms.append(p)
+
 
 
 
