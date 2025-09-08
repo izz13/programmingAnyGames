@@ -14,6 +14,9 @@ class PhysicObject:
         self.surface = pygame.Surface(self.size)
         self.surface.fill("red")
         self.rect = self.surface.get_rect(center = self.pos)
+        self.slideRect = pygame.Rect(0,0,self.rect.w,self.rect.h * .5)
+        self.slideRect.midbottom = self.rect.midbottom
+        self.sliding = False
         self.vel = Vector2(0)
         self.acc = Vector2(0)
         self.normal = Vector2(0)
@@ -24,6 +27,7 @@ class PhysicObject:
         self.collisionObjects = collisionObjects
         self.move(dt)
         self.rect.center = self.pos
+        self.slideRect.midbottom = self.rect.midbottom
         #print(self.onGround)
 
     def draw(self,screen):
@@ -49,7 +53,10 @@ class PhysicObject:
         new_dy = dy
         new_dx = dx
         onGround = False
-        currentRect = self.rect
+        if not self.sliding:
+            currentRect = self.rect
+        else:
+            currentRect = self.slideRect
         futureRectY = self.getNextRect(0,dy,currentRect)
         futureRectX = self.getNextRect(dx,0,currentRect)
         for obj in self.collisionObjects:
@@ -84,8 +91,14 @@ class PhysicObject:
                     futureRectX = self.getNextRect(dx,0,currentRect)
         distance = Vector2.distance_to(Vector2(currentRect.center),Vector2(self.rect.center))
         if distance < PhysicObject.MAX_MOVEMENT:
-            self.pos = Vector2(currentRect.center)
-            self.rect = currentRect
+            if not self.sliding:
+                self.pos = Vector2(currentRect.center)
+                self.rect = currentRect
+                self.slideRect.midbottom = self.rect.midbottom
+            else:
+                self.slideRect = currentRect
+                self.rect.midbottom = self.slideRect.midbottom
+                self.pos = Vector2(self.rect.center)
         self.onGround = onGround
         return new_dx,new_dy
 

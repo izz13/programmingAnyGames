@@ -34,8 +34,10 @@ for i in range(3):
     platforms.append(p)
 leftWall = CollisionObject([-250,HEIGHT/2],[500,HEIGHT])
 rightWall = CollisionObject([WIDTH + 250, HEIGHT/2],[500,HEIGHT])
+slideTestWall = CollisionObject([200,HEIGHT/2],[64,HEIGHT*4/5 - 264])
 platforms.append(leftWall)
 platforms.append(rightWall)
+platforms.append(slideTestWall)
 
 # for i in range(32):
 #     width = WIDTH/16
@@ -95,12 +97,14 @@ def draw(world : pygame.Surface):
 isRunning = True
 
 while isRunning:
+    pygame.display.set_caption(str(testObject.direction))
     events = pygame.event.get()
     for event in events:
         if event.type == pygame.QUIT:
             isRunning = False
     update(dt,world)
     draw(world)
+    pygame.display.set_icon(testObject.currentAnimation.frames[testObject.currentAnimation.frameNumber])
     screen.blit(cam.surface,[0,0])
     dt = min(clock.tick(fps)/1000  ,max_dt)
     pygame.display.flip()

@@ -27,7 +27,10 @@ class Player:
         self.currentState = Player.states["idle"]
         self.facingLeft = True
         self.tryAttack = False
-        self.slidingSpeed = 1000
+        self.slidingSpeed = 750
+        self.slideDirection = 0
+        self.totalSlideDistance = 200
+        self.currentSlideDistance = 0
         self.setAnimationClips()
         self.currentAnimation = self.idleAnimation
 
@@ -39,7 +42,7 @@ class Player:
         self.fallAnimation = Animator("Prototyping/Coach/playerFallFrames",3,[48,64],"Fall",loop = False)
         self.attackAnimation = Animator("Prototyping/Coach/playerAttackFrames",10,[64,72],"Attack",loop = False)
         self.attackAnimation.animationSpeed = 2
-        self.slideAnimation = Animator("Prototyping/Coach/playerSlidingFrames",10,[48,64],"Slide",loop = False)
+        self.slideAnimation = Animator("Prototyping/Coach/playerSlidingFrames",10,[48,48],"Slide",loop = False)
 
     def update(self,dt,collisionObjects):
         # self.direction = self.getInput()
@@ -55,6 +58,8 @@ class Player:
             self.fallUpdate(dt)
         elif self.currentState == Player.states["attack"]:
             self.attackUpdate(dt)
+        elif self.currentState == Player.states["sliding"]:
+            self.slidingUpdate(dt)
         self.physicObject.update(dt,collisionObjects)
 
     def draw(self,screen):
@@ -69,9 +74,12 @@ class Player:
         if self.currentState == Player.states["attack"]:
             self.currentAnimation = self.attackAnimation
         if self.currentState == Player.states["sliding"]:
-            self.currentState = self.slideAnimation
+            self.currentAnimation = self.slideAnimation
         rect = self.getDrawRect()
-        # pygame.draw.rect(screen,"blue",self.physicObject.rect)
+        if self.physicObject.sliding:
+            pygame.draw.rect(screen,"blue",self.physicObject.slideRect)
+        else:
+            pygame.draw.rect(screen,"blue",self.physicObject.rect)
         # pygame.draw.rect(screen,"red",rect)
         self.currentAnimation.draw(screen,rect,self.facingLeft)
         #screen.blit(self.image,self.physicObject.rect)
@@ -130,6 +138,8 @@ class Player:
             self.idleAnimation.reset()
             if inputVector.y == -1 and self.physicObject.onGround:
                 currentState = Player.states["jump"]
+            elif inputVector.y == 1 and self.physicObject.onGround:
+                currentState = Player.states["sliding"]
             else:
                 currentState = Player.states["move"]
             self.direction = self.getInput()
@@ -159,6 +169,9 @@ class Player:
         elif self.direction.y == -1 and self.physicObject.onGround:
             self.runAnimation.reset()
             currentState = Player.states["jump"]
+        elif self.direction.y == 1 and self.physicObject.onGround:
+            self.runAnimation.reset()
+            currentState = Player.states["sliding"]
         if self.physicObject.vel.y > PhysicObject.TOLERANCE:
             #print("changing to fall")
             self.runAnimation.reset()
@@ -207,6 +220,27 @@ class Player:
             self.attackAnimation.reset()
             currentState = Player.states["idle"]
         self.attackAnimation.update(dt)
+        self.currentState = currentState
+
+    def slidingUpdate(self,dt):
+        currentState = self.currentState
+        if self.facingLeft:
+            self.slideDirection = -1
+        else:
+            self.slideDirection = 1
+        vel_x = self.slideDirection*self.slidingSpeed
+        if self.currentSlideDistance + abs(vel_x*dt) < self.totalSlideDistance:
+            self.physicObject.sliding = True
+            self.currentSlideDistance += abs(vel_x*dt)
+            self.physicObject.vel.x = vel_x
+        else:
+            self.physicObject.sliding = False
+            self.physicObject.vel.x = 0
+            self.direction = Vector2(0)
+            self.slideAnimation.reset()
+            currentState = Player.states["idle"]
+            self.currentSlideDistance = 0
+        self.slideAnimation.update(dt)
         self.currentState = currentState
 
     def jump(self,height):
