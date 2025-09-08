@@ -36,7 +36,8 @@ platforms.append(p)
 p = CollisionObject([-16, HEIGHT], [ 32, HEIGHT + 600])
 platforms.append(p)
 
-
+slideTestWall = CollisionObject([200,HEIGHT/2],[64,HEIGHT*4/5 - 264])
+platforms.append(slideTestWall)
 
 def update(dt, world):
     cam.update(world, dt, testObject.physicObject)

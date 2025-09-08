@@ -40,7 +40,8 @@ for i in range(3):
 for i in range(3):
     p = CollisionObject([WIDTH/2 + 100 - i*200,HEIGHT/2 -200 - i*150],[100,32])
     platforms.append(p)
-
+slideTestWall = CollisionObject([200,HEIGHT/2],[64,HEIGHT*4/5 - 264])
+platforms.append(p)
 
 def update(dt, world):
     cam.update(world, dt, testObject.physicObject)
