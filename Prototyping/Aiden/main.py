@@ -6,7 +6,7 @@ import math
 
 
 pygame.init()
-WIDTH,HEIGHT = 2000, 1200
+WIDTH,HEIGHT = 2000, 2000
 SWIDTH, SHEIGHT = 800, 640
 
 
@@ -35,6 +35,29 @@ platforms.append(p)
 
 p = CollisionObject([-16, HEIGHT], [ 32, HEIGHT + 600])
 platforms.append(p)
+
+p = CollisionObject([1200, 1550], [100, 20])
+platforms.append(p)
+
+p = CollisionObject([1370, 1400], [100, 20])
+platforms.append(p)
+
+p = CollisionObject([1100, 1200], [100, 20])
+platforms.append(p)
+
+p = CollisionObject([700, 1400], [500, 20])
+platforms.append(p)
+
+p = CollisionObject([300, 1300], [20, 20])
+platforms.append(p)
+
+p = CollisionObject([400, 1050], [20, 20])
+platforms.append(p)
+
+p = CollisionObject([750, 900], [300, 20])
+platforms.append(p)
+
+
 
 
 
