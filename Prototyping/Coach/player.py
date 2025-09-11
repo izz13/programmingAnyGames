@@ -19,7 +19,7 @@ class Player:
         self.direction = Vector2(0)
         self.maxSpeed = 300
         self.acc = 5000
-        self.deAcc = 900
+        self.deAcc = 2000
         self.jumpSpeed = 500
         self.jumpMinHeight = 175
         self.jumpMaxHeight = 250
@@ -29,7 +29,8 @@ class Player:
         self.tryAttack = False
         self.slidingSpeed = 750
         self.slideDirection = 0
-        self.totalSlideDistance = 200
+        self.fullTotalSlideDistance = 300
+        self.totalSlideDistance = self.fullTotalSlideDistance
         self.currentSlideDistance = 0
         self.setAnimationClips()
         self.currentAnimation = self.idleAnimation
@@ -76,10 +77,10 @@ class Player:
         if self.currentState == Player.states["sliding"]:
             self.currentAnimation = self.slideAnimation
         rect = self.getDrawRect()
-        if self.physicObject.sliding:
-            pygame.draw.rect(screen,"blue",self.physicObject.slideRect)
-        else:
-            pygame.draw.rect(screen,"blue",self.physicObject.rect)
+        # if self.physicObject.sliding:
+        #     pygame.draw.rect(screen,"blue",self.physicObject.slideRect)
+        # else:
+        #     pygame.draw.rect(screen,"blue",self.physicObject.rect)
         # pygame.draw.rect(screen,"red",rect)
         self.currentAnimation.draw(screen,rect,self.facingLeft)
         #screen.blit(self.image,self.physicObject.rect)
@@ -139,6 +140,7 @@ class Player:
             if inputVector.y == -1 and self.physicObject.onGround:
                 currentState = Player.states["jump"]
             elif inputVector.y == 1 and self.physicObject.onGround:
+                #self.totalSlideDistance = self.checkSlideDistance()
                 currentState = Player.states["sliding"]
             else:
                 currentState = Player.states["move"]
@@ -171,6 +173,7 @@ class Player:
             currentState = Player.states["jump"]
         elif self.direction.y == 1 and self.physicObject.onGround:
             self.runAnimation.reset()
+            #self.totalSlideDistance = self.checkSlideDistance()
             currentState = Player.states["sliding"]
         if self.physicObject.vel.y > PhysicObject.TOLERANCE:
             #print("changing to fall")
@@ -234,11 +237,34 @@ class Player:
             self.currentSlideDistance += abs(vel_x*dt)
             self.physicObject.vel.x = vel_x
         else:
+            rect = self.physicObject.rect
+            checkRect = pygame.Rect(rect.x,rect.y - 5,rect.w,rect.h)
+            collidedObject = self.physicObject.checkIfInCollisionObject(checkRect)
+            # if not collidedObject:
+            #     self.physicObject.sliding = False
+            #     #self.physicObject.vel.x = 0
+            #     self.direction = Vector2(0)
+            #     self.slideAnimation.reset()
+            #     currentState = Player.states["idle"]
+            #     self.currentSlideDistance = 0
+            # else:
+            if collidedObject:
+                if self.slideDirection == -1:
+                    self.physicObject.rect.right = collidedObject.rect.left
+                    self.physicObject.pos = Vector2(self.physicObject.rect.center)
+                else:
+                    self.physicObject.rect.left = collidedObject.rect.right
+                    self.physicObject.pos = Vector2(self.physicObject.rect.center)
             self.physicObject.sliding = False
-            self.physicObject.vel.x = 0
-            self.direction = Vector2(0)
+            #self.physicObject.vel.x = 0
+            self.direction = self.getInput()
             self.slideAnimation.reset()
-            currentState = Player.states["idle"]
+            if self.direction == Vector2(0):
+                currentState = Player.states["idle"]
+            elif self.direction.y == -1 and self.physicObject.onGround:
+                currentState = Player.states["jump"]
+            elif self.direction.x != 0 and self.direction.y == 0 or self.direction.y == 1:
+                currentState = Player.states["move"]
             self.currentSlideDistance = 0
         self.slideAnimation.update(dt)
         self.currentState = currentState
@@ -246,3 +272,18 @@ class Player:
     def jump(self,height):
         jumpSpeed = sqrt(2 * self.physicObject.GRAVITY * height)
         self.physicObject.vel.y = -jumpSpeed
+
+    def checkSlideDistance(self):
+        totalSlideDistance = self.fullTotalSlideDistance
+        rect = self.physicObject.rect
+        slideEndRect = pygame.Rect(rect.x + self.fullTotalSlideDistance*self.slideDirection,rect.y - 5,rect.w,rect.h)
+        collidedObject = self.physicObject.checkIfInCollisionObject(slideEndRect)
+        if collidedObject:
+            collidedObject.surface.fill("yellow")
+            if self.slideDirection == -1:
+                totalSlideDistance = abs(collidedObject.rect.right - self.physicObject.rect.left)
+            else:
+                totalSlideDistance = abs(collidedObject.rect.left - self.physicObject.rect.right)
+        return totalSlideDistance
+
+

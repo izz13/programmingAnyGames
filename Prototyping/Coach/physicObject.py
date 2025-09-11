@@ -113,3 +113,10 @@ class PhysicObject:
             else:
                 dy = -1*PhysicObject.TOLERANCE
         return pygame.Rect(rect.x + dx, rect.y + dy, rect.width,rect.height)
+    
+    def checkIfInCollisionObject(self,checkRect:pygame.Rect):
+        collidedObject = None
+        for obj in self.collisionObjects:
+            if checkRect.colliderect(obj.rect):
+                collidedObject = obj
+        return collidedObject
