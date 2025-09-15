@@ -11,7 +11,8 @@ class Player:
         "jump" : 2,
         "fall" : 3,
         "attack" : 4,
-        "sliding" : 5
+        "sliding" : 5,
+        "jumpAttack" : 6
     }
     def __init__(self,startPos,size):
         self.physicObject = PhysicObject(startPos,size)
@@ -24,6 +25,8 @@ class Player:
         self.jumpMinHeight = 175
         self.jumpMaxHeight = 250
         self.jumpHeight = self.jumpMinHeight
+        self.jumpAttackHeight = 100
+        self.jumpAttackSpeed = 400
         self.currentState = Player.states["idle"]
         self.facingLeft = True
         self.tryAttack = False
@@ -41,8 +44,10 @@ class Player:
         self.runAnimation.animationSpeed = 2
         self.jumpAnimation = Animator("Prototyping/Coach/playerJumpFrames",7,[48,64],"Jump",loop = False)
         self.fallAnimation = Animator("Prototyping/Coach/playerFallFrames",3,[48,64],"Fall",loop = False)
-        self.attackAnimation = Animator("Prototyping/Coach/playerAttackFrames",10,[64,72],"Attack",loop = False)
+        self.attackAnimation = Animator("Prototyping/Coach/playerAttackFrames0",10,[64,72],"Attack",loop = False)
         self.attackAnimation.animationSpeed = 2
+        self.jumpAttackAnimation = Animator("Prototyping/Coach/playerAttackFrames1",10,[64,72],"Jump_Attack",loop = False)
+        self.jumpAttackAnimation.animationSpeed = 2
         self.slideAnimation = Animator("Prototyping/Coach/playerSlidingFrames",10,[48,48],"Slide",loop = False)
 
     def update(self,dt,collisionObjects):
@@ -61,6 +66,8 @@ class Player:
             self.attackUpdate(dt)
         elif self.currentState == Player.states["sliding"]:
             self.slidingUpdate(dt)
+        elif self.currentState == Player.states["jumpAttack"]:
+            pass
         self.physicObject.update(dt,collisionObjects)
 
     def draw(self,screen):
