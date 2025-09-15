@@ -27,11 +27,18 @@ class Player:
         self.currentState = Player.states["idle"]
         self.facingLeft = True
         self.tryAttack = False
+<<<<<<< Updated upstream
         self.slidingSpeed = 750
         self.slideDirection = 0
         self.fullTotalSlideDistance = 200
         self.totalSlideDistance = self.fullTotalSlideDistance
         self.currentSlideDistance = 0
+=======
+        self.slidingSpeed = 1000
+        self.slideDirection = 0
+        self.totalSlideDistance  = 125
+        self.currentSlideDistance =0
+>>>>>>> Stashed changes
         self.setAnimationClips()
         self.currentAnimation = self.idleAnimation
 
@@ -59,7 +66,11 @@ class Player:
             self.fallUpdate(dt)
         elif self.currentState == Player.states["attack"]:
             self.attackUpdate(dt)
+<<<<<<< Updated upstream
         elif self.currentState == Player.states["sliding"]:
+=======
+        elif self.currentState ==Player.states["slide"]:
+>>>>>>> Stashed changes
             self.slidingUpdate(dt)
         self.physicObject.update(dt,collisionObjects)
 
@@ -140,8 +151,12 @@ class Player:
             if inputVector.y == -1 and self.physicObject.onGround:
                 currentState = Player.states["jump"]
             elif inputVector.y == 1 and self.physicObject.onGround:
+<<<<<<< Updated upstream
                 self.totalSlideDistance = self.checkSlideDistance()
                 currentState = Player.states["sliding"]
+=======
+                currentState = Player.states["slide"]
+>>>>>>> Stashed changes
             else:
                 currentState = Player.states["move"]
             self.direction = self.getInput()
@@ -173,8 +188,12 @@ class Player:
             currentState = Player.states["jump"]
         elif self.direction.y == 1 and self.physicObject.onGround:
             self.runAnimation.reset()
+<<<<<<< Updated upstream
             self.totalSlideDistance = self.checkSlideDistance()
             currentState = Player.states["sliding"]
+=======
+            currentState = Player.states["slide"]
+>>>>>>> Stashed changes
         if self.physicObject.vel.y > PhysicObject.TOLERANCE:
             #print("changing to fall")
             self.runAnimation.reset()
@@ -225,12 +244,17 @@ class Player:
         self.attackAnimation.update(dt)
         self.currentState = currentState
 
+<<<<<<< Updated upstream
     def slidingUpdate(self,dt):
+=======
+    def slidingUpdate(self, dt):
+>>>>>>> Stashed changes
         currentState = self.currentState
         if self.facingLeft:
             self.slideDirection = -1
         else:
             self.slideDirection = 1
+<<<<<<< Updated upstream
         vel_x = self.slideDirection*self.slidingSpeed
         if self.currentSlideDistance + abs(vel_x*dt) < self.totalSlideDistance:
             self.physicObject.sliding = True
@@ -265,6 +289,21 @@ class Player:
 
     def jump(self,height):
         jumpSpeed = sqrt(2 * self.physicObject.GRAVITY * height)
+=======
+        vel_x = self.slideDirection*self.slidingSpeed*dt
+        if self.currentSlideDistance + vel_x< self.totalSlideDistance:
+            self.currentSlideDistance += vel_x
+            self.physicObject = vel_x
+        else:
+            self.slideAnimation.reset()
+            currentState = Player.states["idle"]
+            self.currentSlideDistance = 0
+        self.slideAnimation.update(dt)
+        self.currentState = currentState
+
+    def jump(self):
+        jumpSpeed = sqrt(2 * self.physicObject.GRAVITY * self.jumpHeight)
+>>>>>>> Stashed changes
         self.physicObject.vel.y = -jumpSpeed
 
     def checkSlideDistance(self):
