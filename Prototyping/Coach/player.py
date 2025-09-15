@@ -240,14 +240,6 @@ class Player:
             rect = self.physicObject.rect
             checkRect = pygame.Rect(rect.x,rect.y - 5,rect.w,rect.h)
             collidedObject = self.physicObject.checkIfInCollisionObject(checkRect)
-            # if not collidedObject:
-            #     self.physicObject.sliding = False
-            #     #self.physicObject.vel.x = 0
-            #     self.direction = Vector2(0)
-            #     self.slideAnimation.reset()
-            #     currentState = Player.states["idle"]
-            #     self.currentSlideDistance = 0
-            # else:
             if collidedObject:
                 if self.slideDirection == -1:
                     self.physicObject.rect.right = collidedObject.rect.left
@@ -279,7 +271,6 @@ class Player:
         slideEndRect = pygame.Rect(rect.x + self.fullTotalSlideDistance*self.slideDirection,rect.y - 5,rect.w,rect.h)
         collidedObject = self.physicObject.checkIfInCollisionObject(slideEndRect)
         if collidedObject:
-            collidedObject.surface.fill("yellow")
             if self.slideDirection == -1:
                 totalSlideDistance = abs(collidedObject.rect.right - self.physicObject.rect.left)
             else:
