@@ -77,10 +77,10 @@ class Player:
         if self.currentState == Player.states["sliding"]:
             self.currentAnimation = self.slideAnimation
         rect = self.getDrawRect()
-        if self.physicObject.sliding:
-            pygame.draw.rect(screen,"blue",self.physicObject.slideRect)
-        else:
-            pygame.draw.rect(screen,"blue",self.physicObject.rect)
+        # if self.physicObject.sliding:
+        #     pygame.draw.rect(screen,"blue",self.physicObject.slideRect)
+        # else:
+        #     pygame.draw.rect(screen,"blue",self.physicObject.rect)
         # pygame.draw.rect(screen,"red",rect)
         self.currentAnimation.draw(screen,rect,self.facingLeft)
         #screen.blit(self.image,self.physicObject.rect)
@@ -226,42 +226,40 @@ class Player:
         self.currentState = currentState
 
     def slidingUpdate(self,dt):
-        currentState = self.currentState
-        if self.facingLeft:
-            self.slideDirection = -1
-        else:
-            self.slideDirection = 1
-        vel_x = self.slideDirection*self.slidingSpeed
-        if self.currentSlideDistance + abs(vel_x*dt) < self.totalSlideDistance:
-            self.physicObject.sliding = True
-            self.currentSlideDistance += abs(vel_x*dt)
-            self.physicObject.vel.x = vel_x
-        else:
-            rect = self.physicObject.rect
-            checkRect = pygame.Rect(rect.x,rect.y - 5,rect.w,rect.h)
-            collidedObject = self.physicObject.checkIfInCollisionObject(checkRect)
-            if not collidedObject:
-                self.physicObject.sliding = False
-                self.physicObject.vel.x = 0
-                self.direction = Vector2(0)
-                self.slideAnimation.reset()
-                currentState = Player.states["idle"]
-                self.currentSlideDistance = 0
+            currentState = self.currentState
+            if self.facingLeft:
+                self.slideDirection = -1
             else:
-                if self.slideDirection == 1:
-                    self.physicObject.rect.right = collidedObject.rect.left
-                    self.physicObject.pos = Vector2(self.physicObject.rect.center)
-                else:
-                    self.physicObject.rect.left = collidedObject.rect.right
-                    self.physicObject.pos = Vector2(self.physicObject.rect.center)
+                self.slideDirection = 1
+            vel_x = self.slideDirection*self.slidingSpeed
+            if self.currentSlideDistance + abs(vel_x*dt) < self.totalSlideDistance:
+                self.physicObject.sliding = True
+                self.currentSlideDistance += abs(vel_x*dt)
+                self.physicObject.vel.x = vel_x
+            else:
+                rect = self.physicObject.rect
+                checkRect = pygame.Rect(rect.x,rect.y - 5,rect.w,rect.h)
+                collidedObject = self.physicObject.checkIfInCollisionObject(checkRect)
+                if collidedObject:
+                    if self.slideDirection == -1:
+                        self.physicObject.rect.right = collidedObject.rect.left
+                        self.physicObject.pos = Vector2(self.physicObject.rect.center)
+                    else:
+                        self.physicObject.rect.left = collidedObject.rect.right
+                        self.physicObject.pos = Vector2(self.physicObject.rect.center)
                 self.physicObject.sliding = False
-                self.physicObject.vel.x = 0
-                self.direction = Vector2(0)
+                #self.physicObject.vel.x = 0
+                self.direction = self.getInput()
                 self.slideAnimation.reset()
-                currentState = Player.states["idle"]
+                if self.direction == Vector2(0):
+                    currentState = Player.states["idle"]
+                elif self.direction.y == -1 and self.physicObject.onGround:
+                    currentState = Player.states["jump"]
+                elif self.direction.x != 0 and self.direction.y == 0 or self.direction.y == 1:
+                    currentState = Player.states["move"]
                 self.currentSlideDistance = 0
-        self.slideAnimation.update(dt)
-        self.currentState = currentState
+            self.slideAnimation.update(dt)
+            self.currentState = currentState
 
     def jump(self,height):
         jumpSpeed = sqrt(2 * self.physicObject.GRAVITY * height)
@@ -273,7 +271,6 @@ class Player:
         slideEndRect = pygame.Rect(rect.x + self.fullTotalSlideDistance*self.slideDirection,rect.y - 5,rect.w,rect.h)
         collidedObject = self.physicObject.checkIfInCollisionObject(slideEndRect)
         if collidedObject:
-            collidedObject.surface.fill("yellow")
             if self.slideDirection == -1:
                 totalSlideDistance = abs(collidedObject.rect.right - self.physicObject.rect.left)
             else:
