@@ -20,20 +20,20 @@ class Player:
         self.direction = Vector2(0)
         self.maxSpeed = 300
         self.acc = 5000
-        self.deAcc = 900
+        self.deAcc = 2000
         self.jumpSpeed = 500
         self.jumpMinHeight = 175
         self.jumpMaxHeight = 250
         self.jumpHeight = self.jumpMinHeight
-        self.jumpAttackHeight = 100
-        self.jumpAttackSpeed = 1000
+        self.jumpAttackHeight = 30
+        self.jumpAttackSpeed = 5000
         self.currentState = Player.states["idle"]
         self.facingLeft = True
-        self.attackCombo = 0
         self.tryAttack = False
+        self.attackCombo = 0
         self.slidingSpeed = 750
         self.slideDirection = 0
-        self.fullTotalSlideDistance = 200
+        self.fullTotalSlideDistance = 300
         self.totalSlideDistance = self.fullTotalSlideDistance
         self.currentSlideDistance = 0
         self.setAnimationClips()
@@ -48,7 +48,7 @@ class Player:
         self.attackAnimation = Animator("Prototyping/Coach/playerAttackFrames0",10,[64,72],"Attack",loop = False)
         self.attackAnimation.animationSpeed = 2
         self.jumpAttackAnimation = Animator("Prototyping/Coach/playerAttackFrames1",10,[64,72],"Jump_Attack",loop = False)
-        self.jumpAttackAnimation.animationSpeed = 2
+        self.jumpAttackAnimation.animationSpeed = 1
         self.slideAnimation = Animator("Prototyping/Coach/playerSlidingFrames",10,[48,48],"Slide",loop = False)
 
     def update(self,dt,collisionObjects):
@@ -150,7 +150,7 @@ class Player:
             if inputVector.y == -1 and self.physicObject.onGround:
                 currentState = Player.states["jump"]
             elif inputVector.y == 1 and self.physicObject.onGround:
-                self.totalSlideDistance = self.checkSlideDistance()
+                #self.totalSlideDistance = self.checkSlideDistance()
                 currentState = Player.states["sliding"]
             else:
                 currentState = Player.states["move"]
@@ -183,7 +183,7 @@ class Player:
             currentState = Player.states["jump"]
         elif self.direction.y == 1 and self.physicObject.onGround:
             self.runAnimation.reset()
-            self.totalSlideDistance = self.checkSlideDistance()
+            #self.totalSlideDistance = self.checkSlideDistance()
             currentState = Player.states["sliding"]
         if self.physicObject.vel.y > PhysicObject.TOLERANCE:
             #print("changing to fall")
@@ -199,12 +199,13 @@ class Player:
             #print("trying to jump")
             self.jump(self.jumpMinHeight)
             self.moveX(dt)
-        elif self.tryAttack:
-            self.setJumpAttack(dt)
-            currenState = Player.states["jumpAttack"]
-        elif self.physicObject.vel.y < 0:
+        elif self.physicObject.vel.y < 0 and not self.tryAttack:
             #print("currently jumping")
             self.moveX(dt)
+        elif self.physicObject.vel.y < 0 and self.tryAttack:
+            self.setJumpAttack(dt)
+            currentState = Player.states["jumpAttack"]
+            self.jumpAnimation.reset()
         elif self.physicObject.vel.y >= 0:
             #print("changing to fall")
             self.jumpAnimation.reset()
@@ -217,7 +218,7 @@ class Player:
         self.direction = self.getInput()
         if not self.physicObject.onGround:
             self.moveX(dt)
-        if self.tryAttack and not self.physicObject.onGround:
+        elif self.tryAttack and not self.physicObject.onGround:
             self.setJumpAttack(dt)
             currentState = Player.states["jumpAttack"]
         else:
@@ -251,40 +252,40 @@ class Player:
         self.currentState = currentState
 
     def slidingUpdate(self,dt):
-            currentState = self.currentState
-            if self.facingLeft:
-                self.slideDirection = -1
-            else:
-                self.slideDirection = 1
-            vel_x = self.slideDirection*self.slidingSpeed
-            if self.currentSlideDistance + abs(vel_x*dt) < self.totalSlideDistance:
-                self.physicObject.sliding = True
-                self.currentSlideDistance += abs(vel_x*dt)
-                self.physicObject.vel.x = vel_x
-            else:
-                rect = self.physicObject.rect
-                checkRect = pygame.Rect(rect.x,rect.y - 5,rect.w,rect.h)
-                collidedObject = self.physicObject.checkIfInCollisionObject(checkRect)
-                if collidedObject:
-                    if self.slideDirection == -1:
-                        self.physicObject.rect.right = collidedObject.rect.left
-                        self.physicObject.pos = Vector2(self.physicObject.rect.center)
-                    else:
-                        self.physicObject.rect.left = collidedObject.rect.right
-                        self.physicObject.pos = Vector2(self.physicObject.rect.center)
-                self.physicObject.sliding = False
-                #self.physicObject.vel.x = 0
-                self.direction = self.getInput()
-                self.slideAnimation.reset()
-                if self.direction == Vector2(0):
-                    currentState = Player.states["idle"]
-                elif self.direction.y == -1 and self.physicObject.onGround:
-                    currentState = Player.states["jump"]
-                elif self.direction.x != 0 and self.direction.y == 0 or self.direction.y == 1:
-                    currentState = Player.states["move"]
-                self.currentSlideDistance = 0
-            self.slideAnimation.update(dt)
-            self.currentState = currentState
+        currentState = self.currentState
+        if self.facingLeft:
+            self.slideDirection = -1
+        else:
+            self.slideDirection = 1
+        vel_x = self.slideDirection*self.slidingSpeed
+        if self.currentSlideDistance + abs(vel_x*dt) < self.totalSlideDistance:
+            self.physicObject.sliding = True
+            self.currentSlideDistance += abs(vel_x*dt)
+            self.physicObject.vel.x = vel_x
+        else:
+            rect = self.physicObject.rect
+            checkRect = pygame.Rect(rect.x,rect.y - 5,rect.w,rect.h)
+            collidedObject = self.physicObject.checkIfInCollisionObject(checkRect)
+            if collidedObject:
+                if self.slideDirection == -1:
+                    self.physicObject.rect.right = collidedObject.rect.left
+                    self.physicObject.pos = Vector2(self.physicObject.rect.center)
+                else:
+                    self.physicObject.rect.left = collidedObject.rect.right
+                    self.physicObject.pos = Vector2(self.physicObject.rect.center)
+            self.physicObject.sliding = False
+            #self.physicObject.vel.x = 0
+            self.direction = self.getInput()
+            self.slideAnimation.reset()
+            if self.direction == Vector2(0):
+                currentState = Player.states["idle"]
+            elif self.direction.y == -1 and self.physicObject.onGround:
+                currentState = Player.states["jump"]
+            elif self.direction.x != 0 and self.direction.y == 0 or self.direction.y == 1:
+                currentState = Player.states["move"]
+            self.currentSlideDistance = 0
+        self.slideAnimation.update(dt)
+        self.currentState = currentState
 
     def jump(self,height):
         jumpSpeed = sqrt(2 * self.physicObject.GRAVITY * height)
@@ -302,7 +303,7 @@ class Player:
                 totalSlideDistance = abs(collidedObject.rect.left - self.physicObject.rect.right)
         return totalSlideDistance
     
-    def jumpAttackUpdate(self, dt):
+    def jumpAttackUpdate(self,dt):
         currentState = self.currentState
         self.direction = Vector2(0)
         self.moveX(dt)
@@ -318,10 +319,11 @@ class Player:
             self.jumpAttackAnimation.reset()
         self.currentState = currentState
 
-    def setJumpAttack(self, dt):
+    def setJumpAttack(self,dt):
         direction = 1
         if self.facingLeft:
             direction = -1
-        self.physicObject.vel.x = direction * self.jumpAttackSpeed
+        self.physicObject.vel.x = direction*self.jumpAttackSpeed
         self.jump(self.jumpAttackHeight)
+
 
