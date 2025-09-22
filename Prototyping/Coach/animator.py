@@ -5,6 +5,7 @@ from pygame.math import Vector2
 class Animator:
     frameTime = 1/15
     def __init__(self,folderPath,numOfFrames,size,name,loop = True):
+        self.name = name
         self.frames = []
         self.size = size
         for i in range(numOfFrames):
