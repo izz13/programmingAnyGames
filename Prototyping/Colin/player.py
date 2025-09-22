@@ -26,7 +26,7 @@ class Player:
         self.jumpMaxHeight = 250
         self.jumpHeight = self.jumpMinHeight
         self.jumpAttackHeight = 30
-        self.jumpAttackSpeed = 5000
+        self.jumpAttackSpeed = 750
         self.currentState = Player.states["idle"]
         self.facingLeft = True
         self.tryAttack = False
