@@ -23,8 +23,8 @@ class Player:
         self.acc = 5000
         self.deAcc = 2000
         self.jumpSpeed = 500
-        self.jumpMinHeight = 175
-        self.jumpMaxHeight = 250
+        self.jumpMinHeight = 250
+        self.jumpMaxHeight = 500
         self.jumpHeight = self.jumpMinHeight
         self.jumpAttackHeight = 30
         self.jumpAttackSpeed = 750
