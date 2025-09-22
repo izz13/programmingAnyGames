@@ -97,7 +97,7 @@ def draw(world : pygame.Surface):
 isRunning = True
 
 while isRunning:
-    pygame.display.set_caption(str(testObject.totalSlideDistance))
+    pygame.display.set_caption(testObject.currentAnimation.name)
     events = pygame.event.get()
     for event in events:
         if event.type == pygame.QUIT:
