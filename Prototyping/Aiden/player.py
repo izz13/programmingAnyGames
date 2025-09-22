@@ -25,8 +25,8 @@ class Player:
         self.jumpMinHeight = 250
         self.jumpMaxHeight = 500
         self.jumpHeight = self.jumpMinHeight
-        self.jumpAttackHeight = 100
-        self.jumpAttackSpeed = 400
+        self.jumpAttackHeight = 500
+        self.jumpAttackSpeed = 800
         self.currentState = Player.states["idle"]
         self.facingLeft = True
         self.tryAttack = False
@@ -202,6 +202,9 @@ class Player:
         elif self.physicObject.vel.y < 0:
             #print("currently jumping")
             self.moveX(dt)
+        elif self.tryAttack:
+            self.setJumpAttack(dt)
+            currentState = Player.states["jumpAttack"]
         elif self.physicObject.vel.y >= 0:
             #print("changing to fall")
             self.jumpAnimation.reset()
@@ -214,6 +217,9 @@ class Player:
         self.direction = self.getInput()
         if not self.physicObject.onGround:
             self.moveX(dt)
+        if self.tryAttack and not self.physicObject.onGround:
+            self.setJumpAttack(dt)
+            currentState = Player.states["jumpattack"]
         else:
             self.moveX(dt)
             if self.direction.x != 0:
