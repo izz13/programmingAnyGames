@@ -1,3 +1,4 @@
+
 import pygame
 from pygame.math import Vector2
 from physicObject import PhysicObject
@@ -22,11 +23,11 @@ class Player:
         self.acc = 5000
         self.deAcc = 2000
         self.jumpSpeed = 500
-        self.jumpMinHeight = 250
-        self.jumpMaxHeight = 500
+        self.jumpMinHeight = 175
+        self.jumpMaxHeight = 250
         self.jumpHeight = self.jumpMinHeight
-        self.jumpAttackHeight = 500
-        self.jumpAttackSpeed = 800
+        self.jumpAttackHeight = 30
+        self.jumpAttackSpeed = 750
         self.currentState = Player.states["idle"]
         self.facingLeft = True
         self.tryAttack = False
@@ -48,7 +49,7 @@ class Player:
         self.attackAnimation = Animator("Prototyping/Aiden/playerAttackFrames0",10,[64,72],"Attack",loop = False)
         self.attackAnimation.animationSpeed = 2
         self.jumpAttackAnimation = Animator("Prototyping/Aiden/playerAttackFrames1",10,[64,72],"Jump_Attack",loop = False)
-        self.jumpAttackAnimation.animationSpeed = 2
+        self.jumpAttackAnimation.animationSpeed = 1
         self.slideAnimation = Animator("Prototyping/Aiden/playerSlidingFrames",10,[48,48],"Slide",loop = False)
 
     def update(self,dt,collisionObjects):
@@ -199,12 +200,13 @@ class Player:
             #print("trying to jump")
             self.jump(self.jumpMinHeight)
             self.moveX(dt)
-        elif self.physicObject.vel.y < 0:
+        elif self.physicObject.vel.y < 0 and not self.tryAttack:
             #print("currently jumping")
             self.moveX(dt)
-        elif self.tryAttack:
+        elif self.physicObject.vel.y < 0 and self.tryAttack:
             self.setJumpAttack(dt)
             currentState = Player.states["jumpAttack"]
+            self.jumpAnimation.reset()
         elif self.physicObject.vel.y >= 0:
             #print("changing to fall")
             self.jumpAnimation.reset()
@@ -217,9 +219,9 @@ class Player:
         self.direction = self.getInput()
         if not self.physicObject.onGround:
             self.moveX(dt)
-        if self.tryAttack and not self.physicObject.onGround:
+        elif self.tryAttack and not self.physicObject.onGround:
             self.setJumpAttack(dt)
-            currentState = Player.states["jumpattack"]
+            currentState = Player.states["jumpAttack"]
         else:
             self.moveX(dt)
             if self.direction.x != 0:
@@ -301,8 +303,8 @@ class Player:
             else:
                 totalSlideDistance = abs(collidedObject.rect.left - self.physicObject.rect.right)
         return totalSlideDistance
-
-    def jumpAttackUpdate(self, dt):
+    
+    def jumpAttackUpdate(self,dt):
         currentState = self.currentState
         self.direction = Vector2(0)
         self.moveX(dt)
@@ -314,14 +316,13 @@ class Player:
             else:
                 currentState = Player.states["idle"]
         self.jumpAttackAnimation.update(dt)
-        if self.currentState!= currentState:
+        if self.currentState != currentState:
             self.jumpAttackAnimation.reset()
         self.currentState = currentState
 
-    def setJumpAttack(self, dt):
+    def setJumpAttack(self,dt):
         direction = 1
         if self.facingLeft:
-            direction = -1 
+            direction = -1
         self.physicObject.vel.x = direction*self.jumpAttackSpeed
         self.jump(self.jumpAttackHeight)
-
