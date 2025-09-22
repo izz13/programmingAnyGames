@@ -3,6 +3,7 @@ from player import Player
 from collisionObject import CollisionObject
 from camera import Camera
 from random import randint
+from enemy import Enemy
 import math
 
 
@@ -22,6 +23,10 @@ world = pygame.Surface([WIDTH, HEIGHT])
 cam = Camera([SCREEN_WIDTH, SCREEN_HEIGHT])
 
 testObject = Player([WIDTH/2,32],[42,64])
+enemies = []
+for enemy in range(1):
+    e = Enemy([WIDTH/2 - 48, 32], [42,64], "base")
+    enemies.append(e)
 
 platforms = []
 for i in range(3):
@@ -47,6 +52,8 @@ platforms.append(slideTestWall)
 def update(dt, world):
     cam.update(world, dt, testObject.physicObject)
     testObject.update(dt,platforms)
+    for enemy in enemies:
+        enemy.update(dt, platforms)
     for platform in platforms:
         platform.update()
 
@@ -69,6 +76,8 @@ def draw(world):
                 #pygame.draw.circle(world,"white",[i ,j],3)
                 numDrawnPoints += 1
     testObject.draw(world)
+    for enemy in enemies:
+        enemy.draw(world)
     print(numDrawnPoints)
     for platform in platforms:
         platform.draw(world)

@@ -40,16 +40,16 @@ class Player:
         self.currentAnimation = self.idleAnimation
 
     def setAnimationClips(self):
-        self.idleAnimation = Animator("Prototyping/Coach/playerIdleFrames",10,[32,64],"Idle")
-        self.runAnimation = Animator("Prototyping/Coach/playerRunFrames",10,[48,64],"Run")
+        self.idleAnimation = Animator("Prototyping/Colin/playerIdleFrames",10,[32,64],"Idle")
+        self.runAnimation = Animator("Prototyping/Colin/playerRunFrames",10,[48,64],"Run")
         self.runAnimation.animationSpeed = 2
-        self.jumpAnimation = Animator("Prototyping/Coach/playerJumpFrames",7,[48,64],"Jump",loop = False)
-        self.fallAnimation = Animator("Prototyping/Coach/playerFallFrames",3,[48,64],"Fall",loop = False)
-        self.attackAnimation = Animator("Prototyping/Coach/playerAttackFrames0",10,[64,72],"Attack",loop = False)
+        self.jumpAnimation = Animator("Prototyping/Colin/playerJumpFrames",7,[48,64],"Jump",loop = False)
+        self.fallAnimation = Animator("Prototyping/Colin/playerFallFrames",3,[48,64],"Fall",loop = False)
+        self.attackAnimation = Animator("Prototyping/Colin/playerAttackFrames0",10,[64,72],"Attack",loop = False)
         self.attackAnimation.animationSpeed = 2
-        self.jumpAttackAnimation = Animator("Prototyping/Coach/playerAttackFrames1",10,[64,72],"Jump_Attack",loop = False)
+        self.jumpAttackAnimation = Animator("Prototyping/Colin/playerAttackFrames1",10,[64,72],"Jump_Attack",loop = False)
         self.jumpAttackAnimation.animationSpeed = 1
-        self.slideAnimation = Animator("Prototyping/Coach/playerSlidingFrames",10,[48,48],"Slide",loop = False)
+        self.slideAnimation = Animator("Prototyping/Colin/playerSlidingFrames",10,[48,48],"Slide",loop = False)
 
     def update(self,dt,collisionObjects):
         # self.direction = self.getInput()
