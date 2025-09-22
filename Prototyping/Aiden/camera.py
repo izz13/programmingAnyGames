@@ -15,7 +15,9 @@ class Camera:
         #self.moveByKeys()
         self.moveByPoint(sprite.rect.center)
         self.move(world,dt)
+        pygame.draw.circle(world,"red",sprite.rect.center,10)
         self.surface.blit(world,area = self.rect)
+        
 
     def move(self,world : pygame.Surface,dt):
         if self.vel.magnitude() < Camera.TOLERANCE:
@@ -26,18 +28,26 @@ class Camera:
             self.rect.left = world.get_rect().left
             self.vel.x = 0
             dx = 0
+            self.pos.x = self.rect.centerx
+            self.pos.y = self.rect.centery
         if self.rect.right + dx > world.get_rect().right:
             self.rect.right = world.get_rect().right
             self.vel.x = 0
             dx = 0
+            self.pos.x = self.rect.centerx
+            self.pos.y = self.rect.centery
         if self.rect.top + dy < world.get_rect().top:
             self.rect.top = world.get_rect().top
             self.vel.y = 0
             dy = 0
+            self.pos.x = self.rect.centerx
+            self.pos.y = self.rect.centery
         if self.rect.bottom + dy > world.get_rect().bottom:
             self.rect.bottom = world.get_rect().bottom
             self.vel.y = 0
             dy = 0
+            self.pos.x = self.rect.centerx
+            self.pos.y = self.rect.centery
         self.pos.x += dx
         self.pos.y += dy
         self.rect.centerx = int(self.pos.x)
