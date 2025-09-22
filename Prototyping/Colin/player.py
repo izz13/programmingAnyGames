@@ -11,7 +11,8 @@ class Player:
         "jump" : 2,
         "fall" : 3,
         "attack" : 4,
-        "sliding" : 5
+        "sliding" : 5,
+        "jumpAttack" : 6
     }
     def __init__(self,startPos,size):
         self.physicObject = PhysicObject(startPos,size)
@@ -24,8 +25,11 @@ class Player:
         self.jumpMinHeight = 175
         self.jumpMaxHeight = 250
         self.jumpHeight = self.jumpMinHeight
+        self.jumpAttackHeight = 100
+        self.jumpAttackSpeed = 1000
         self.currentState = Player.states["idle"]
         self.facingLeft = True
+        self.attackCombo = 0
         self.tryAttack = False
         self.slidingSpeed = 750
         self.slideDirection = 0
@@ -41,8 +45,10 @@ class Player:
         self.runAnimation.animationSpeed = 2
         self.jumpAnimation = Animator("Prototyping/Coach/playerJumpFrames",7,[48,64],"Jump",loop = False)
         self.fallAnimation = Animator("Prototyping/Coach/playerFallFrames",3,[48,64],"Fall",loop = False)
-        self.attackAnimation = Animator("Prototyping/Coach/playerAttackFrames",10,[64,72],"Attack",loop = False)
+        self.attackAnimation = Animator("Prototyping/Coach/playerAttackFrames0",10,[64,72],"Attack",loop = False)
         self.attackAnimation.animationSpeed = 2
+        self.jumpAttackAnimation = Animator("Prototyping/Coach/playerAttackFrames1",10,[64,72],"Jump_Attack",loop = False)
+        self.jumpAttackAnimation.animationSpeed = 2
         self.slideAnimation = Animator("Prototyping/Coach/playerSlidingFrames",10,[48,48],"Slide",loop = False)
 
     def update(self,dt,collisionObjects):
@@ -61,6 +67,8 @@ class Player:
             self.attackUpdate(dt)
         elif self.currentState == Player.states["sliding"]:
             self.slidingUpdate(dt)
+        elif self.currentState == Player.states["jumpAttack"]:
+            self.jumpAttackUpdate(dt)
         self.physicObject.update(dt,collisionObjects)
 
     def draw(self,screen):
@@ -76,6 +84,8 @@ class Player:
             self.currentAnimation = self.attackAnimation
         if self.currentState == Player.states["sliding"]:
             self.currentAnimation = self.slideAnimation
+        if self.currentState == Player.states["jumpAttack"]:
+            self.currentAnimation = self.jumpAttackAnimation
         rect = self.getDrawRect()
         # if self.physicObject.sliding:
         #     pygame.draw.rect(screen,"blue",self.physicObject.slideRect)
@@ -189,6 +199,9 @@ class Player:
             #print("trying to jump")
             self.jump(self.jumpMinHeight)
             self.moveX(dt)
+        elif self.tryAttack:
+            self.setJumpAttack(dt)
+            currenState = Player.states["jumpAttack"]
         elif self.physicObject.vel.y < 0:
             #print("currently jumping")
             self.moveX(dt)
@@ -204,6 +217,9 @@ class Player:
         self.direction = self.getInput()
         if not self.physicObject.onGround:
             self.moveX(dt)
+        if self.tryAttack and not self.physicObject.onGround:
+            self.setJumpAttack(dt)
+            currentState = Player.states["jumpAttack"]
         else:
             self.moveX(dt)
             if self.direction.x != 0:
@@ -219,9 +235,18 @@ class Player:
         currentState= self.currentState
         self.direction = Vector2(0)
         self.moveX(dt)
+        if self.attackAnimation.frameNumber >= 3 and self.attackCombo < 1:
+            self.getInput()
+            if self.tryAttack:
+                self.attackCombo += 1
         if self.attackAnimation.frameNumber >= self.attackAnimation.totalFrames - 1:
-            self.attackAnimation.reset()
-            currentState = Player.states["idle"]
+            if self.attackCombo >= 1:
+                self.setJumpAttack(dt)
+                self.attackAnimation.reset()
+                currentState = Player.states["jumpAttack"]
+            else:
+                self.attackAnimation.reset()
+                currentState = Player.states["idle"]
         self.attackAnimation.update(dt)
         self.currentState = currentState
 
@@ -276,5 +301,27 @@ class Player:
             else:
                 totalSlideDistance = abs(collidedObject.rect.left - self.physicObject.rect.right)
         return totalSlideDistance
+    
+    def jumpAttackUpdate(self, dt):
+        currentState = self.currentState
+        self.direction = Vector2(0)
+        self.moveX(dt)
+        if self.jumpAttackAnimation.frameNumber >= self.jumpAttackAnimation.totalFrames - 1:
+            if self.attackCombo >= 1:
+                self.attackCombo = 0
+            if not self.physicObject.onGround:
+                currentState = Player.states["fall"]
+            else:
+                currentState = Player.states["idle"]
+        self.jumpAttackAnimation.update(dt)
+        if self.currentState != currentState:
+            self.jumpAttackAnimation.reset()
+        self.currentState = currentState
 
+    def setJumpAttack(self, dt):
+        direction = 1
+        if self.facingLeft:
+            direction = -1
+        self.physicObject.vel.x = direction * self.jumpAttackSpeed
+        self.jump(self.jumpAttackHeight)
 
