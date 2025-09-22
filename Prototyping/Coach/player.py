@@ -199,12 +199,13 @@ class Player:
             #print("trying to jump")
             self.jump(self.jumpMinHeight)
             self.moveX(dt)
-        elif self.physicObject.vel.y < 0:
+        elif self.physicObject.vel.y < 0 and not self.tryAttack:
             #print("currently jumping")
             self.moveX(dt)
-        elif self.tryAttack:
+        elif self.physicObject.vel.y < 0 and self.tryAttack:
             self.setJumpAttack(dt)
             currentState = Player.states["jumpAttack"]
+            self.jumpAnimation.reset()
         elif self.physicObject.vel.y >= 0:
             #print("changing to fall")
             self.jumpAnimation.reset()
