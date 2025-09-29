@@ -15,6 +15,7 @@ class Camera:
         #self.moveByKeys()
         self.moveByPoint(sprite.rect.center)
         self.move(world,dt)
+       # pygame.draw.circle(world,"red",sprite.rect.center,10)
         #pygame.draw.circle(world,"red",sprite.rect.center,10)
         self.surface.blit(world,area = self.rect)
         
