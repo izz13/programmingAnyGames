@@ -17,15 +17,17 @@ class Enemy:
         self.maxSpeed = 300
         self.acc = 5000
         self.deAcc = 2000
+        self.followDistance = 50
+        self.targePosition = Vector2(0)
         self.currentState = self.states["idle"]
         self.facingLeft = True
         self.setAnimationClips()
         self.currentAnimation = self.idleAnimation
 
     def setAnimationClips(self):
-        self.idleAnimation = None
-        self.moveAnimation = None
-        self.fallAnimation = None
+        self.idleAnimation = Animator("Prototyping/Coach/robotIdleFrames",[64,64],"idle")
+        self.moveAnimation = Animator("Prototyping/Coach/robotRunFrames", [64,64], "move")
+        self.fallAnimation = Animator("Prototyping/Coach/robotFallFrames",[64,64], "fall", loop = False)
 
     def update(self,dt,collisionObjects):
         if self.currentState == self.states["idle"]:
