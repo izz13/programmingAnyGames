@@ -4,7 +4,7 @@ from animator import Animator
 from physicObject import PhysicObject
 
 class Enemy:
-    def __init__(self, startPos, size, name):
+    def __init__(self,startPos,size,name):
         self.states = {
             "idle" : 0,
             "move" : 1,
@@ -13,41 +13,43 @@ class Enemy:
         self.pos = Vector2(startPos)
         self.size = Vector2(size)
         self.name = name
-        self.physicObject = PhysicObject(self.pos, self.size)
+        self.physicObject = PhysicObject(self.pos,self.size)
         self.maxSpeed = 300
         self.acc = 5000
         self.deAcc = 2000
+        self.followDistance = 50
+        self.targetPosition = Vector2(0)
         self.currentState = self.states["idle"]
         self.facingLeft = True
         self.setAnimationClips()
         self.currentAnimation = self.idleAnimation
-        
-    def setAnimationClips(self):
-        self.idleAnimation = None
-        self.moveAnimation = None
-        self.fallAnimation = None
 
-    def update(self, dt, collisionObjects):
+    def setAnimationClips(self):
+        self.idleAnimation = Animator("Prototyping/Colin/robotIdleFrames",[64,64],"idle")
+        self.moveAnimation = Animator("Prototyping/Colin/robotRunFrames", [64,64], "move")
+        self.fallAnimation = Animator("Prototyping/Colin/robotFallFrames",[64,64], "fall", loop = False)
+
+    def update(self,dt,collisionObjects):
         if self.currentState == self.states["idle"]:
             self.idleUpdate(dt)
         if self.currentState == self.states["move"]:
             self.moveUpdate(dt)
         if self.currentState == self.states["fall"]:
             self.fallUpdate(dt)
-        self.physicObject.update(dt, collisionObjects)
+        self.physicObject.update(dt,collisionObjects)
 
-    def draw(self, screen):
+    def draw(self,screen):
         if self.currentState == self.states["idle"]:
             self.currentAnimation = self.idleAnimation
         if self.currentState == self.states["move"]:
             self.currentAnimation = self.moveAnimation
         if self.currentState == self.states["fall"]:
-            self.currentAnimaion = self.fallAnimation
+            self.currentAnimation = self.fallAnimation
         if self.currentAnimation != None:
             rect = self.getDrawRect()
-            self.currentAnimation.draw(screen, rect, self.facingLeft)
+            self.currentAnimation.draw(screen,rect,self.facingLeft)
         else:
-            screen.blit(self.physicObject.surface, self.physicObject.rect)
+            screen.blit(self.physicObject.surface,self.physicObject.rect)
 
     def getDrawRect(self):
         currentImage = self.currentAnimation.frames[self.currentAnimation.frameNumber]
@@ -63,15 +65,14 @@ class Enemy:
     def idleUpdate(self,dt):
         currentState = self.currentState
         if self.physicObject.vel.y > PhysicObject.TOLERANCE:
-            #print("changing to fall")
             currentState = self.states["fall"]
         if self.idleAnimation != None:
             self.idleAnimation.update(dt)
             if currentState != self.currentState:
                 self.idleAnimation.reset()
         self.currentState = currentState
-    
-    def moveUpdate(self, dt):
+
+    def moveUpdate(self,dt):
         self.currentState = self.states["idle"]
 
     def fallUpdate(self,dt):
@@ -83,4 +84,3 @@ class Enemy:
             if self.currentState != currentState:
                 self.fallAnimation.reset()
         self.currentState = currentState
-

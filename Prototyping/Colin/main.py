@@ -25,29 +25,24 @@ cam = Camera([SCREEN_WIDTH, SCREEN_HEIGHT])
 testObject = Player([WIDTH/2,32],[42,64])
 enemies = []
 for enemy in range(1):
-    e = Enemy([WIDTH/2 - 48, 32], [42,64], "base")
+    e = Enemy([WIDTH/2 - 48, 32], [42,60], "base")
     enemies.append(e)
 
 platforms = []
-for i in range(3):
-    p = CollisionObject([WIDTH/2 - WIDTH*i/4,HEIGHT -16 - i*32],[WIDTH - WIDTH*i/4,32])
-    platforms.append(p)
-for i in range(3):
-    p = CollisionObject([WIDTH/2 + WIDTH*i/4,HEIGHT -200 - i*32],[WIDTH - WIDTH*i/4 - 150,32])
-    platforms.append(p)
-p = CollisionObject([WIDTH,HEIGHT/2],[1, HEIGHT])
-platforms.append(p)
-p = CollisionObject([0, HEIGHT/2],[1, HEIGHT])
-platforms.append(p)
-for i in range(3):
-    p = CollisionObject([WIDTH/2 + i*200,HEIGHT/2 + 200 - i*150],[100,32])
-    platforms.append(p)
-for i in range(3):
-    p = CollisionObject([WIDTH/2 + 100 - i*200,HEIGHT/2 -200 - i*150],[100,32])
-    platforms.append(p)
-slideTestWall = CollisionObject([200,HEIGHT/2],[100,HEIGHT*4/5 - 264])
-platforms.append(p)
-platforms.append(slideTestWall)
+platforms.append(CollisionObject([WIDTH/2,HEIGHT - 16],[WIDTH,32]))
+rightWall = CollisionObject([WIDTH,HEIGHT/2],[1, HEIGHT])
+platforms.append(rightWall)
+leftWall = CollisionObject([0, HEIGHT/2],[1, HEIGHT])
+platforms.append(leftWall)
+# for i in range(3):
+#     p = CollisionObject([WIDTH/2 + i*200,HEIGHT/2 + 200 - i*150],[100,32])
+#     platforms.append(p)
+# for i in range(3):
+#     p = CollisionObject([WIDTH/2 + 100 - i*200,HEIGHT/2 -200 - i*150],[100,32])
+#     platforms.append(p)
+# slideTestWall = CollisionObject([200,HEIGHT/2],[100,HEIGHT*4/5 - 264])
+# platforms.append(p)
+# platforms.append(slideTestWall)
 
 def update(dt, world):
     cam.update(world, dt, testObject.physicObject)
@@ -78,7 +73,6 @@ def draw(world):
     testObject.draw(world)
     for enemy in enemies:
         enemy.draw(world)
-    print(numDrawnPoints)
     for platform in platforms:
         platform.draw(world)
     playerPos = testObject.physicObject.rect.center
