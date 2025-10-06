@@ -20,8 +20,11 @@ class PhysicObject:
         self.vel = Vector2(0)
         self.acc = Vector2(0)
         self.normal = Vector2(0)
+        self.force = Vector2(0)
+        self.friction = 0.5
         self.onGround = False
         self.collisionObjects = []
+        self.dt = 0
 
     def update(self,dt,collisionObjects):
         self.collisionObjects = collisionObjects
@@ -32,6 +35,10 @@ class PhysicObject:
 
     def draw(self,screen):
         screen.blit(self.surface,self.rect)
+
+    def impulse(self, force : float, direction : Vector2):
+        self.force = force * direction
+        self.vel += self.force
 
     def move(self,dt):
         self.acc.y = PhysicObject.GRAVITY
