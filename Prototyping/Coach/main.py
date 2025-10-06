@@ -25,24 +25,25 @@ cam = Camera([SCREEN_WIDTH,SCREEN_HEIGHT])
 testObject = Player([WIDTH/2,32],[42,64])
 enemies = []
 for enemy in range(1):
-    e = Enemy([WIDTH/2 - 48,32],[42,64],"base")
+    e = Enemy([WIDTH/2 - 48,32],[42,60],"base")
     enemies.append(e)
 
 
 
 platforms = []
-for i in range(3):
-    p = CollisionObject([WIDTH/2 - WIDTH*i/4,HEIGHT -16 - i*32],[WIDTH - WIDTH*i/4,32])
-    platforms.append(p)
-for i in range(3):
-    p = CollisionObject([WIDTH/2 + WIDTH*i/4,HEIGHT -200 - i*32],[WIDTH - WIDTH*i/4 - 150,32])
-    platforms.append(p)
+# for i in range(3):
+#     p = CollisionObject([WIDTH/2 - WIDTH*i/4,HEIGHT -16 - i*32],[WIDTH - WIDTH*i/4,32])
+#     platforms.append(p)
+# for i in range(3):
+#     p = CollisionObject([WIDTH/2 + WIDTH*i/4,HEIGHT -200 - i*32],[WIDTH - WIDTH*i/4 - 150,32])
+#     platforms.append(p)
+platforms.append(CollisionObject([WIDTH/2,HEIGHT - 16],[WIDTH,32]))
 leftWall = CollisionObject([-250,HEIGHT/2],[500,HEIGHT])
 rightWall = CollisionObject([WIDTH + 250, HEIGHT/2],[500,HEIGHT])
 slideTestWall = CollisionObject([200,HEIGHT/2],[64,HEIGHT*4/5 - 264])
 platforms.append(leftWall)
 platforms.append(rightWall)
-platforms.append(slideTestWall)
+#platforms.append(slideTestWall)
 
 # for i in range(32):
 #     width = WIDTH/16
