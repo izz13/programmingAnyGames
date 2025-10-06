@@ -24,17 +24,18 @@ cam = Camera([SWIDTH, SHEIGHT])
 testObject = Player([WIDTH/2,32],[42,64])
 enemies = []
 for enemy in range(1):
-    e = Enemy([WIDTH/2 - 48, 32], [42, 64], "base")
+    e = Enemy([WIDTH/2 - 48, 32], [42, 60], "base")
     enemies.append(e)
 
 
 platforms = []
-for i in range(3):
-    p = CollisionObject([WIDTH/2 - WIDTH*i/4,HEIGHT -16 - i*32],[WIDTH - WIDTH*i/4,32])
-    platforms.append(p)
-for i in range(3):
-    p = CollisionObject([WIDTH/2 + WIDTH*i/4,HEIGHT -200 - i*32],[WIDTH - WIDTH*i/4 - 150,32])
-    platforms.append(p)
+# for i in range(3):
+#     p = CollisionObject([WIDTH/2 - WIDTH*i/4,HEIGHT -16 - i*32],[WIDTH - WIDTH*i/4,32])
+#     platforms.append(p)
+# for i in range(3):
+#     p = CollisionObject([WIDTH/2 + WIDTH*i/4,HEIGHT -200 - i*32],[WIDTH - WIDTH*i/4 - 150,32])
+#     platforms.append(p)
+
 
 p = CollisionObject([WIDTH + 16, HEIGHT], [ 32, HEIGHT + 600])
 platforms.append(p)
@@ -42,29 +43,32 @@ platforms.append(p)
 p = CollisionObject([-16, HEIGHT], [ 32, HEIGHT + 600])
 platforms.append(p)
 
-p = CollisionObject([1200, 1550], [100, 20])
-platforms.append(p)
+platforms.append(CollisionObject([WIDTH/2,HEIGHT - 16],[WIDTH,32]))
 
-p = CollisionObject([1370, 1400], [100, 20])
-platforms.append(p)
 
-p = CollisionObject([1100, 1200], [100, 20])
-platforms.append(p)
+# p = CollisionObject([1200, 1550], [100, 20])
+# platforms.append(p)
 
-p = CollisionObject([700, 1400], [500, 20])
-platforms.append(p)
+# p = CollisionObject([1370, 1400], [100, 20])
+# platforms.append(p)
 
-p = CollisionObject([300, 1300], [20, 20])
-platforms.append(p)
+# p = CollisionObject([1100, 1200], [100, 20])
+# platforms.append(p)
 
-p = CollisionObject([400, 1050], [20, 20])
-platforms.append(p)
+# p = CollisionObject([700, 1400], [500, 20])
+# platforms.append(p)
 
-p = CollisionObject([750, 900], [300, 20])
-platforms.append(p)
+# p = CollisionObject([300, 1300], [20, 20])
+# platforms.append(p)
 
-p = CollisionObject([500, 1700], [200,100])
-platforms.append(p)
+# p = CollisionObject([400, 1050], [20, 20])
+# platforms.append(p)
+
+# p = CollisionObject([750, 900], [300, 20])
+# platforms.append(p)
+
+# p = CollisionObject([500, 1700], [200,100])
+# platforms.append(p)
 
 
 
