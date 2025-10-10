@@ -36,6 +36,7 @@ class Player:
         self.fullTotalSlideDistance = 300
         self.totalSlideDistance = self.fullTotalSlideDistance
         self.currentSlideDistance = 0
+        self.attackRect = None
         self.setAnimationClips()
         self.currentAnimation = self.idleAnimation
 
@@ -94,6 +95,8 @@ class Player:
         # pygame.draw.rect(screen,"red",rect)
         self.currentAnimation.draw(screen,rect,self.facingLeft)
         #screen.blit(self.image,self.physicObject.rect)
+        if self.attackRect:
+            pygame.draw.rect(screen,"cyan",self.attackRect)
 
     def getDrawRect(self):
         currentImage = self.currentAnimation.frames[self.currentAnimation.frameNumber]
@@ -248,6 +251,13 @@ class Player:
             else:
                 self.attackAnimation.reset()
                 currentState = Player.states["idle"]
+            self.attackRect = None
+        else:
+            drawRect = self.getDrawRect()
+            attackRect = pygame.Rect(drawRect.left,drawRect.top,drawRect.w/2,drawRect.h)
+            if not self.facingLeft:
+                attackRect.topright = drawRect.topright
+            self.attackRect = attackRect
         self.attackAnimation.update(dt)
         self.currentState = currentState
 
@@ -308,12 +318,19 @@ class Player:
         self.direction = Vector2(0)
         self.moveX(dt)
         if self.jumpAttackAnimation.frameNumber >= self.jumpAttackAnimation.totalFrames - 1:
+            self.attackRect = None
             if self.attackCombo >= 1:
                 self.attackCombo = 0
             if not self.physicObject.onGround:
                 currentState = Player.states["fall"]
             else:
                 currentState = Player.states["idle"]
+        else:
+            drawRect = self.getDrawRect()
+            attackRect = pygame.Rect(drawRect.left,drawRect.top,drawRect.w/2,drawRect.h)
+            if not self.facingLeft:
+                attackRect.topright = drawRect.topright
+            self.attackRect = attackRect
         self.jumpAttackAnimation.update(dt)
         if self.currentState != currentState:
             self.jumpAttackAnimation.reset()

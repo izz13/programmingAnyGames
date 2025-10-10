@@ -36,6 +36,7 @@ class Enemy:
             self.moveUpdate(dt)
         if self.currentState == self.states["fall"]:
             self.fallUpdate(dt)
+        self.hitTest(dt)
         self.physicObject.update(dt,collisionObjects)
 
     def draw(self,screen):
@@ -63,7 +64,14 @@ class Enemy:
         return drawRect
     
     def idleUpdate(self,dt):
+        self.idleInfo = {
+            "direction" : Vector2(0,0),
+            "acc" : 10000,
+            "deAcc" : 10000,
+            "maxSpeed" : 200
+        }
         currentState = self.currentState
+        self.moveX(dt,self.idleInfo)
         if self.physicObject.vel.y > PhysicObject.TOLERANCE:
             currentState = self.states["fall"]
         if self.idleAnimation != None:
@@ -84,3 +92,36 @@ class Enemy:
             if self.currentState != currentState:
                 self.fallAnimation.reset()
         self.currentState = currentState
+
+    def hurtUpdate(self,dt):
+        self.hurtInfo = {
+            "direction" : Vector2(0,0),
+            "acc" : 10000,
+            "deAcc" : 500,
+            "maxSpeed" : 200
+        }
+        
+
+    def hitTest(self,dt):
+        self.hitInfo = {
+            "direction" : Vector2(1,0),
+            "acc" : 10000,
+            "deAcc" : 1000,
+            "maxSpeed" : 2000
+        }
+        keys = pygame.key.get_just_pressed()
+        if keys[pygame.K_LEFT]:
+            self.hitInfo["direction"].x *= -1
+            self.moveX(dt,self.hitInfo)
+        if keys[pygame.K_RIGHT]:
+            self.moveX(dt,self.hitInfo)
+
+    def moveX(self,dt,moveInfo : dict):
+        if moveInfo["direction"].x == 0:
+            speedChange = moveInfo["deAcc"]*dt
+        else:
+            speedChange = moveInfo["acc"]*dt
+        currentXVel = Vector2(self.physicObject.vel.x, 0)
+        desiredXVel = Vector2(moveInfo["maxSpeed"]*moveInfo["direction"].x,0)
+        currentXVel.move_towards_ip(desiredXVel,speedChange)
+        self.physicObject.vel.x = currentXVel.x
